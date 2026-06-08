@@ -329,6 +329,39 @@
       0 0 8px rgba(0,0,0,1);
     letter-spacing:1px;
   }
+  /* ── Numerical location (easting/northing) markers ── */
+  /* Grid intersection dot — 1km (6-digit) */
+  .grid-dot{
+    width:6px;height:6px;background:#ff3333;border:1.5px solid #fff;
+    border-radius:50%;box-shadow:0 0 4px rgba(0,0,0,0.9);
+    transform:translate(-50%,-50%);
+  }
+  /* 100m (8-digit) dot */
+  .grid-dot-100m{
+    width:4px;height:4px;background:#ff6600;border:1px solid #fff;
+    border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,0.8);
+    transform:translate(-50%,-50%);
+  }
+  /* 10m/1m (10-digit) dot */
+  .grid-dot-10m{
+    width:3px;height:3px;background:#ffaa00;border:1px solid rgba(255,255,255,0.7);
+    border-radius:50%;box-shadow:0 0 2px rgba(0,0,0,0.7);
+    transform:translate(-50%,-50%);
+  }
+  /* Easting/northing numeric label next to intersection */
+  .num-loc-label{
+    background:transparent;border:none;pointer-events:none;white-space:nowrap;
+  }
+  .num-loc-label span{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    line-height:1;
+    color:#fffb00;
+    text-shadow:
+      -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000,
+      -1.5px  1.5px 0 #000, 1.5px  1.5px 0 #000,
+      0 0 5px rgba(0,0,0,1);
+  }
 
   /* Spinner */
   .spinner{
@@ -468,10 +501,10 @@
           <div class="opt-row">
             <span class="opt-label">Line Color</span>
             <select id="utm-color">
+              <option value="#ff3333" selected>Red</option>
               <option value="#ffb800">Amber</option>
               <option value="#00d4ff">Cyan</option>
               <option value="#00ff88">Green</option>
-              <option value="#ff4d4d">Red</option>
             </select>
           </div>
           <div class="opt-row">
@@ -499,6 +532,7 @@
           <div class="opt-row">
             <span class="opt-label">Line Color</span>
             <select id="mgrs-color">
+              <option value="#ff3333" selected>Red</option>
               <option value="#9d6fff">Purple</option>
               <option value="#00d4ff">Cyan</option>
               <option value="#00ff88">Green</option>
@@ -513,9 +547,11 @@
           <div class="opt-row">
             <span class="opt-label">Grid Precision</span>
             <select id="mgrs-precision">
-              <option value="100000">100km GZD</option>
-              <option value="10000" selected>10km</option>
-              <option value="1000">1km</option>
+              <option value="100000">GZD only (100km)</option>
+              <option value="10000" selected>100km + 10km</option>
+              <option value="1000">+ 1km (6-digit)</option>
+              <option value="100">+ 100m (8-digit)</option>
+              <option value="10">+ 10m / 1m (10-digit)</option>
             </select>
           </div>
         </div>
@@ -647,10 +683,13 @@
     UTM: <kbd>36N 250000 9850000</kbd><br>
     MGRS: <kbd>36MYE 12345 67890</kbd><br>
     Place: Any city/landmark<br><br>
-    <strong>Map Shortcuts:</strong><br>
-    Scroll — Zoom<br>
-    Double-click — Zoom in<br>
-    Drag — Pan<br>
+    <strong>MGRS Precision:</strong><br>
+    zoom 10 → 6-digit (100m)<br>
+    zoom 14 → 8-digit (10m)<br>
+    zoom 18 → 10-digit (1m)<br><br>
+    <strong>Shortcuts:</strong><br>
+    <kbd>/</kbd> Search &nbsp; <kbd>h</kbd> Home<br>
+    <kbd>l</kbd> My Location<br>
   </div>
 </div>
 
@@ -1049,26 +1088,45 @@ function drawMGRSGrid(){
   const west=Math.max(bounds.getWest(),-180);
   const east=Math.min(bounds.getEast(),180);
 
-  // ── ALWAYS draw GZD (Grid Zone Designator) lines ──────────────────────
-  // Vertical lines every 6° lon
+  // ── Helpers ────────────────────────────────────────────────────────────
+  function addDot(lat,lon,cls){
+    L.marker([lat,lon],{
+      icon:L.divIcon({className:'',html:`<div class="${cls}"></div>`,iconSize:[0,0],iconAnchor:[0,0]}),
+      interactive:false,zIndexOffset:400
+    }).addTo(mgrsGridLayer);
+  }
+  function addNumLabel(lat,lon,eText,nText,fontSize){
+    // Easting label above dot, northing label right of dot
+    L.marker([lat,lon],{
+      icon:L.divIcon({
+        className:'num-loc-label',
+        html:`<span style="font-size:${fontSize}px;display:block;margin-left:4px">`+
+             `<span style="color:#66ffff">${eText}</span>`+
+             `<span style="color:#ffcc00"> / ${nText}</span></span>`,
+        iconSize:[0,0],iconAnchor:[0,0]
+      }),
+      interactive:false,zIndexOffset:500
+    }).addTo(mgrsGridLayer);
+  }
+
+  // ── GZD boundary lines (always drawn) ─────────────────────────────────
   const lonStart=Math.floor(west/6)*6;
-  const lonEnd=Math.ceil(east/6)*6;
+  const lonEnd  =Math.ceil(east /6)*6;
+  const latStart=Math.floor(south/8)*8;
+  const latEnd  =Math.ceil(north /8)*8;
+
   for(let lon=lonStart;lon<=lonEnd;lon+=6){
     if(lon<-180||lon>180)continue;
     L.polyline([[south,lon],[north,lon]],
-      {color,weight:1.5,opacity,interactive:false}).addTo(mgrsGridLayer);
+      {color,weight:2,opacity,interactive:false}).addTo(mgrsGridLayer);
   }
-  // Horizontal lines every 8° lat
-  const latStart=Math.floor(south/8)*8;
-  const latEnd=Math.ceil(north/8)*8;
   for(let lat=latStart;lat<=latEnd;lat+=8){
     if(lat<-80||lat>84)continue;
     L.polyline([[lat,west],[lat,east]],
-      {color,weight:1.5,opacity,interactive:false}).addTo(mgrsGridLayer);
+      {color,weight:2,opacity,interactive:false}).addTo(mgrsGridLayer);
   }
 
-  // ── GZD labels — centered in each zone square ─────────────────────────
-  // Show GZD at all zoom levels when MGRS is on; size scales with zoom
+  // ── GZD centre labels (always) ─────────────────────────────────────────
   {
     const gzdFontSize=zoom>=7?18:zoom>=5?15:zoom>=3?12:10;
     for(let lon=lonStart;lon<lonEnd;lon+=6){
@@ -1076,20 +1134,15 @@ function drawMGRSGrid(){
       if(zoneNum<1||zoneNum>60)continue;
       for(let lat=latStart;lat<latEnd;lat+=8){
         const latTop=Math.min(lat+8,84);
-        if(latTop<south||lat>north)continue;
-        if(lon+6<west||lon>east)continue;
+        if(latTop<south||lat>north||lon+6<west||lon>east)continue;
         const band=utmBandLetter(lat+0.1);
         if(!band)continue;
-
-        // Center of the visible portion of the GZD square
         const latMid=(Math.max(lat,south)+Math.min(latTop,north))/2;
         const lonMid=(Math.max(lon,west)+Math.min(lon+6,east))/2;
-        const gzd=`${zoneNum}${band}`;
-
         L.marker([latMid,lonMid],{
           icon:L.divIcon({
             className:'gzd-label',
-            html:`<span style="font-size:${gzdFontSize}px">${gzd}</span>`,
+            html:`<span style="font-size:${gzdFontSize}px">${zoneNum}${band}</span>`,
             iconSize:[0,0],iconAnchor:[0,0]
           }),
           interactive:false,zIndexOffset:100
@@ -1098,117 +1151,202 @@ function drawMGRSGrid(){
     }
   }
 
-  // ── 100k square grid lines and labels — show at zoom >= 6 ─────────────
+  // ── 100k square grid + identifiers (zoom ≥ 6) ─────────────────────────
   if(zoom>=6){
-    // Sub-divide each GZD into 100k squares via UTM
     for(let lon=lonStart;lon<lonEnd;lon+=6){
       const zoneNum=Math.floor((Math.max(lon,-180)+180)/6)+1;
       if(zoneNum<1||zoneNum>60)continue;
-
       for(let lat=latStart;lat<latEnd;lat+=8){
         const latTop=Math.min(lat+8,84);
-        if(latTop<south||lat>north)continue;
-        if(lon+6<west||lon>east)continue;
+        if(latTop<south||lat>north||lon+6<west||lon>east)continue;
         const band=utmBandLetter(lat+0.1);
         if(!band)continue;
         const hem=lat>=0?'N':'S';
 
-        // Determine UTM northing range for this band
-        const utmSW=latLonToUTM(Math.max(lat,south),Math.max(lon,west)+0.01);
+        const utmSW=latLonToUTM(Math.max(lat,south)   ,Math.max(lon,west)+0.01);
         const utmNE=latLonToUTM(Math.min(latTop,north)-0.01,Math.min(lon+6,east)-0.01);
-
-        const eMin=100000,eMax=900000; // valid UTM easting range
+        const eMin=100000,eMax=900000;
         const nMin=Math.floor(utmSW.northing/100000)*100000;
-        const nMax=Math.ceil(utmNE.northing/100000)*100000;
+        const nMax=Math.ceil (utmNE.northing/100000)*100000;
 
-        // Draw 100k easting lines
+        // 100k easting lines
         for(let e=eMin;e<=eMax;e+=100000){
           const pts=[];
-          for(let n=nMin;n<=nMax;n+=50000){
-            try{
-              const ll=utmToLatLon(zoneNum,hem,e,n);
-              if(ll.lat>=-80&&ll.lat<=84)pts.push([ll.lat,ll.lon]);
-            }catch(_){}
+          for(let n=nMin;n<=nMax;n+=20000){
+            try{const ll=utmToLatLon(zoneNum,hem,e,n);if(ll.lat>=-80&&ll.lat<=84)pts.push([ll.lat,ll.lon]);}catch(_){}
           }
-          if(pts.length>1)L.polyline(pts,{color,weight:0.7,opacity:opacity*0.7,dashArray:'3 4',interactive:false}).addTo(mgrsGridLayer);
+          if(pts.length>1)L.polyline(pts,{color,weight:0.9,opacity:opacity*0.8,dashArray:'4 4',interactive:false}).addTo(mgrsGridLayer);
         }
-
-        // Draw 100k northing lines
+        // 100k northing lines
         for(let n=nMin;n<=nMax;n+=100000){
           const pts=[];
-          for(let e=eMin;e<=eMax;e+=50000){
+          for(let e=eMin;e<=eMax;e+=20000){
+            try{const ll=utmToLatLon(zoneNum,hem,e,n);if(ll.lat>=-80&&ll.lat<=84)pts.push([ll.lat,ll.lon]);}catch(_){}
+          }
+          if(pts.length>1)L.polyline(pts,{color,weight:0.9,opacity:opacity*0.8,dashArray:'4 4',interactive:false}).addTo(mgrsGridLayer);
+        }
+
+        // 100k square centre labels
+        const sqFontSize=zoom>=11?14:zoom>=8?12:10;
+        for(let e=eMin;e<eMax;e+=100000){
+          for(let n=nMin;n<nMax;n+=100000){
+            const eCtr=e+50000,nCtr=n+50000;
             try{
-              const ll=utmToLatLon(zoneNum,hem,e,n);
-              if(ll.lat>=-80&&ll.lat<=84)pts.push([ll.lat,ll.lon]);
+              const ll=utmToLatLon(zoneNum,hem,eCtr,nCtr);
+              if(ll.lat<south||ll.lat>north||ll.lon<west||ll.lon>east)continue;
+              if(ll.lat<-80||ll.lat>84)continue;
+              const {colIdx,rowIdx}=utm100kIndices(zoneNum,e,n);
+              const sqId=get100kColLetter(zoneNum,colIdx)+get100kRowLetter(zoneNum,rowIdx);
+              L.marker([ll.lat,ll.lon],{
+                icon:L.divIcon({
+                  className:'sq100k-label',
+                  html:`<span style="font-size:${sqFontSize}px">${sqId}</span>`,
+                  iconSize:[0,0],iconAnchor:[0,0]
+                }),
+                interactive:false,zIndexOffset:200
+              }).addTo(mgrsGridLayer);
             }catch(_){}
           }
-          if(pts.length>1)L.polyline(pts,{color,weight:0.7,opacity:opacity*0.7,dashArray:'3 4',interactive:false}).addTo(mgrsGridLayer);
         }
 
-        // ── 100k square identifier labels ────────────────────────────────
-        if(zoom>=6){
-          const sqFontSize=zoom>=10?14:zoom>=8?12:10;
-          for(let e=eMin;e<eMax;e+=100000){
-            for(let n=nMin;n<nMax;n+=100000){
-              // Center of 100k square
-              const eCtr=e+50000,nCtr=n+50000;
-              try{
-                const ll=utmToLatLon(zoneNum,hem,eCtr,nCtr);
-                if(ll.lat<south||ll.lat>north||ll.lon<west||ll.lon>east)continue;
-                if(ll.lat<-80||ll.lat>84)continue;
+        // ── Sub-grid lines & numerical location markers ──────────────────
+        // Only process the 100k squares that are actually in the viewport
+        for(let e100=eMin;e100<eMax;e100+=100000){
+          for(let n100=nMin;n100<nMax;n100+=100000){
+            // Quick viewport reject: test centre of 100k square
+            try{
+              const llCtr=utmToLatLon(zoneNum,hem,e100+50000,n100+50000);
+              if(llCtr.lat<south-1||llCtr.lat>north+1||llCtr.lon<west-1||llCtr.lon>east+1)continue;
+            }catch(_){continue;}
 
-                const {colIdx,rowIdx}=utm100kIndices(zoneNum,e,n);
-                const colL=get100kColLetter(zoneNum,colIdx);
-                const rowL=get100kRowLetter(zoneNum,rowIdx);
+            // ── 1 km sub-grid (zoom ≥ 9, precision ≤ 1000) ── 6-digit MGRS
+            if(precision<=1000&&zoom>=9){
+              const kmColor=color;
+              // Draw 1km easting lines
+              for(let e=e100;e<=e100+100000;e+=1000){
+                const pts=[];
+                for(let n=n100;n<=n100+100000;n+=500){
+                  try{const ll=utmToLatLon(zoneNum,hem,e,n);pts.push([ll.lat,ll.lon]);}catch(_){}
+                }
+                if(pts.length>1)L.polyline(pts,{color:kmColor,weight:0.5,opacity:opacity*0.6,dashArray:'2 4',interactive:false}).addTo(mgrsGridLayer);
+              }
+              // Draw 1km northing lines
+              for(let n=n100;n<=n100+100000;n+=1000){
+                const pts=[];
+                for(let e=e100;e<=e100+100000;e+=500){
+                  try{const ll=utmToLatLon(zoneNum,hem,e,n);pts.push([ll.lat,ll.lon]);}catch(_){}
+                }
+                if(pts.length>1)L.polyline(pts,{color:kmColor,weight:0.5,opacity:opacity*0.6,dashArray:'2 4',interactive:false}).addTo(mgrsGridLayer);
+              }
 
-                L.marker([ll.lat,ll.lon],{
-                  icon:L.divIcon({
-                    className:'sq100k-label',
-                    html:`<span style="font-size:${sqFontSize}px">${colL}${rowL}</span>`,
-                    iconSize:[0,0],iconAnchor:[0,0]
-                  }),
-                  interactive:false,zIndexOffset:200
-                }).addTo(mgrsGridLayer);
-              }catch(_){}
+              // 6-digit numerical markers at every 1km intersection (zoom ≥ 10)
+              if(zoom>=10){
+                const dotFontSize=zoom>=13?10:zoom>=11?9:8;
+                for(let e=e100;e<=e100+100000;e+=1000){
+                  for(let n=n100;n<=n100+100000;n+=1000){
+                    try{
+                      const ll=utmToLatLon(zoneNum,hem,e,n);
+                      if(ll.lat<south||ll.lat>north||ll.lon<west||ll.lon>east)continue;
+                      addDot(ll.lat,ll.lon,'grid-dot');
+                      if(zoom>=12){
+                        // 6-digit: 3 easting + 3 northing digits (100m precision)
+                        const e3=String(Math.floor((e%100000)/100)).padStart(3,'0');
+                        const n3=String(Math.floor((n%100000)/100)).padStart(3,'0');
+                        addNumLabel(ll.lat,ll.lon,e3,n3,dotFontSize);
+                      }
+                    }catch(_){}
+                  }
+                }
+              }
             }
-          }
-        }
-      }
-    }
 
-    // ── 10k and 1k sub-grid lines at high zoom ───────────────────────────
-    if(precision<=10000&&zoom>=9){
-      const subStep=precision<=1000?1000:10000;
-      const subColor=color;
-      // Sample a few UTM zones in view
-      for(let lon=lonStart;lon<lonEnd;lon+=6){
-        const zoneNum=Math.floor((Math.max(lon,-180)+180)/6)+1;
-        if(zoneNum<1||zoneNum>60)continue;
-        const hem=south>=0?'N':'S';
-        const refUtm=latLonToUTM((south+north)/2,(west+east)/2);
-        const eMin2=Math.floor(refUtm.easting/100000)*100000;
-        const eMax2=eMin2+100000;
-        const nMin2=Math.floor(refUtm.northing/100000)*100000;
-        const nMax2=nMin2+100000;
+            // ── 100 m sub-grid (zoom ≥ 13, precision ≤ 100) ── 8-digit MGRS
+            if(precision<=100&&zoom>=13){
+              const mColor=color;
+              for(let e=e100;e<=e100+100000;e+=100){
+                if((e-e100)%1000===0)continue; // already drawn as 1km line
+                const pts=[];
+                for(let n=n100;n<=n100+100000;n+=100){
+                  try{const ll=utmToLatLon(zoneNum,hem,e,n);pts.push([ll.lat,ll.lon]);}catch(_){}
+                }
+                if(pts.length>1)L.polyline(pts,{color:mColor,weight:0.3,opacity:opacity*0.5,interactive:false}).addTo(mgrsGridLayer);
+              }
+              for(let n=n100;n<=n100+100000;n+=100){
+                if((n-n100)%1000===0)continue;
+                const pts=[];
+                for(let e=e100;e<=e100+100000;e+=100){
+                  try{const ll=utmToLatLon(zoneNum,hem,e,n);pts.push([ll.lat,ll.lon]);}catch(_){}
+                }
+                if(pts.length>1)L.polyline(pts,{color:mColor,weight:0.3,opacity:opacity*0.5,interactive:false}).addTo(mgrsGridLayer);
+              }
 
-        for(let e=eMin2;e<=eMax2;e+=subStep){
-          const pts=[];
-          for(let n=nMin2;n<=nMax2;n+=subStep/2){
-            try{const ll=utmToLatLon(refUtm.zone,hem,e,n);if(ll.lat>=south&&ll.lat<=north)pts.push([ll.lat,ll.lon]);}catch(_){}
-          }
-          if(pts.length>1)L.polyline(pts,{color:subColor,weight:0.5,opacity:opacity*0.5,dashArray:'2 4',interactive:false}).addTo(mgrsGridLayer);
-        }
-        for(let n=nMin2;n<=nMax2;n+=subStep){
-          const pts=[];
-          for(let e=eMin2;e<=eMax2;e+=subStep/2){
-            try{const ll=utmToLatLon(refUtm.zone,hem,e,n);if(ll.lon>=west&&ll.lon<=east)pts.push([ll.lat,ll.lon]);}catch(_){}
-          }
-          if(pts.length>1)L.polyline(pts,{color:subColor,weight:0.5,opacity:opacity*0.5,dashArray:'2 4',interactive:false}).addTo(mgrsGridLayer);
-        }
-        break; // only do the central zone to avoid overload
-      }
-    }
-  }
+              // 8-digit numerical markers at every 100m intersection
+              if(zoom>=14){
+                const dotFontSize=zoom>=15?10:8;
+                for(let e=e100;e<=e100+100000;e+=100){
+                  for(let n=n100;n<=n100+100000;n+=100){
+                    if((e-e100)%1000===0&&(n-n100)%1000===0)continue; // skip 1km intersections
+                    try{
+                      const ll=utmToLatLon(zoneNum,hem,e,n);
+                      if(ll.lat<south||ll.lat>north||ll.lon<west||ll.lon>east)continue;
+                      addDot(ll.lat,ll.lon,'grid-dot-100m');
+                      if(zoom>=15){
+                        // 8-digit: 4 easting + 4 northing digits (10m precision)
+                        const e4=String(Math.floor((e%100000)/10)).padStart(4,'0');
+                        const n4=String(Math.floor((n%100000)/10)).padStart(4,'0');
+                        addNumLabel(ll.lat,ll.lon,e4,n4,dotFontSize);
+                      }
+                    }catch(_){}
+                  }
+                }
+              }
+            }
+
+            // ── 10 m sub-grid (zoom ≥ 17, precision ≤ 10) ── 10-digit MGRS
+            if(precision<=10&&zoom>=17){
+              const mColor=color;
+              for(let e=e100;e<=e100+100000;e+=10){
+                if((e-e100)%100===0)continue;
+                const pts=[];
+                for(let n=n100;n<=n100+100000;n+=10){
+                  try{const ll=utmToLatLon(zoneNum,hem,e,n);pts.push([ll.lat,ll.lon]);}catch(_){}
+                }
+                if(pts.length>1)L.polyline(pts,{color:mColor,weight:0.25,opacity:opacity*0.4,interactive:false}).addTo(mgrsGridLayer);
+              }
+              for(let n=n100;n<=n100+100000;n+=10){
+                if((n-n100)%100===0)continue;
+                const pts=[];
+                for(let e=e100;e<=e100+100000;e+=10){
+                  try{const ll=utmToLatLon(zoneNum,hem,e,n);pts.push([ll.lat,ll.lon]);}catch(_){}
+                }
+                if(pts.length>1)L.polyline(pts,{color:mColor,weight:0.25,opacity:opacity*0.4,interactive:false}).addTo(mgrsGridLayer);
+              }
+
+              // 10-digit numerical markers at every 10m intersection
+              if(zoom>=18){
+                const dotFontSize=9;
+                for(let e=e100;e<=e100+100000;e+=10){
+                  for(let n=n100;n<=n100+100000;n+=10){
+                    if((e-e100)%100===0&&(n-n100)%100===0)continue;
+                    try{
+                      const ll=utmToLatLon(zoneNum,hem,e,n);
+                      if(ll.lat<south||ll.lat>north||ll.lon<west||ll.lon>east)continue;
+                      addDot(ll.lat,ll.lon,'grid-dot-10m');
+                      // 10-digit: 5 easting + 5 northing digits (1m precision)
+                      const e5=String(e%100000).padStart(5,'0');
+                      const n5=String(n%100000).padStart(5,'0');
+                      addNumLabel(ll.lat,ll.lon,e5,n5,dotFontSize);
+                    }catch(_){}
+                  }
+                }
+              }
+            }
+
+          }// n100
+        }// e100
+      }// lat
+    }// lon
+  }// zoom>=6
 
   mgrsGridLayer.addTo(map);
 }
