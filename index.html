@@ -276,7 +276,7 @@
     box-shadow:0 2px 8px rgba(0,0,0,0.5)
   }
 
-  /* Grid labels — high visibility outlined text */
+  /* Grid labels */
   .grid-label{
     background:rgba(10,13,18,0.85);
     border:1px solid rgba(255,255,255,0.2);
@@ -288,7 +288,6 @@
     pointer-events:none;
   }
   
-  /* Edge tick labels */
   .tick-label{
     background:rgba(10,13,18,0.9);
     border:1px solid rgba(255,255,255,0.3);
@@ -624,12 +623,12 @@
     MGRS: <kbd>36MYE 12345 67890</kbd><br>
     Place: Any city/landmark<br><br>
     <strong>Grid Precision:</strong><br>
-    zoom 6-7 → 100km<br>
-    zoom 8-9 → 10km<br>
-    zoom 10-11 → 1km<br>
-    zoom 12-13 → 100m<br>
-    zoom 14-15 → 10m<br>
-    zoom 16+ → 1m<br><br>
+    zoom 5-6 → 100km<br>
+    zoom 7-8 → 10km<br>
+    zoom 9-10 → 1km<br>
+    zoom 11-12 → 100m<br>
+    zoom 13-14 → 10m<br>
+    zoom 15+ → 1m<br><br>
     <strong>Shortcuts:</strong><br>
     <kbd>/</kbd> Search &nbsp; <kbd>h</kbd> Home<br>
     <kbd>l</kbd> My Location<br>
@@ -895,11 +894,11 @@ document.getElementById('opacity-slider').addEventListener('input',function(){
 
 // ─── GRID PRECISION BY ZOOM ───────────────────────────────────────────────
 function getGridPrecision(zoom) {
-  if (zoom <= 7) return { major: 100000, minor: null, label: '100km' };
-  if (zoom <= 9) return { major: 100000, minor: 10000, label: '10km' };
-  if (zoom <= 11) return { major: 10000, minor: 1000, label: '1km' };
-  if (zoom <= 13) return { major: 1000, minor: 100, label: '100m' };
-  if (zoom <= 15) return { major: 100, minor: 10, label: '10m' };
+  if (zoom <= 6) return { major: 100000, minor: null, label: '100km' };
+  if (zoom <= 8) return { major: 100000, minor: 10000, label: '10km' };
+  if (zoom <= 10) return { major: 10000, minor: 1000, label: '1km' };
+  if (zoom <= 12) return { major: 1000, minor: 100, label: '100m' };
+  if (zoom <= 14) return { major: 100, minor: 10, label: '10m' };
   return { major: 10, minor: 1, label: '1m' };
 }
 
@@ -1036,198 +1035,110 @@ function drawMGRSGrid(){
     precision = { major: fixedSpacing, minor: fixedSpacing >= 100000 ? null : fixedSpacing / 10, label: precisionMode + 'm' };
   }
 
-  // Get center to determine UTM zone
-  const center = map.getCenter();
-  const utmCenter = latLonToUTM(center.lat, center.lng);
-  const hem = center.lat >= 0 ? 'N' : 'S';
-
-  // Convert viewport corners to UTM (approximate)
-  const swUTM = latLonToUTM(south, west);
-  const neUTM = latLonToUTM(north, east);
-
-  // Calculate grid range in UTM coordinates
-  const majorSpacing = precision.major;
-  const minorSpacing = precision.minor;
-
-  const eMin = Math.floor(swUTM.easting / majorSpacing) * majorSpacing;
-  const eMax = Math.ceil(neUTM.easting / majorSpacing) * majorSpacing;
-  const nMin = Math.floor(swUTM.northing / majorSpacing) * majorSpacing;
-  const nMax = Math.ceil(neUTM.northing / majorSpacing) * majorSpacing;
-
-  // Draw major grid lines (thick)
-  for (let e = eMin; e <= eMax; e += majorSpacing) {
-    const pts = [];
-    const step = Math.max(majorSpacing / 20, 100);
-    for (let n = nMin; n <= nMax; n += step) {
-      try {
-        const ll = utmToLatLon(utmCenter.zone, hem, e, n);
-        if (ll.lat >= -80 && ll.lat <= 84) pts.push([ll.lat, ll.lon]);
-      } catch(_) {}
-    }
-    if (pts.length > 1) {
-      L.polyline(pts, { color, weight: 2.5, opacity, interactive: false }).addTo(mgrsGridLayer);
+  // Get all UTM zones that intersect the viewport
+  const zones = [];
+  const lonStart = Math.floor(west / 6) * 6;
+  const lonEnd = Math.ceil(east / 6) * 6;
+  for (let lon = lonStart; lon <= lonEnd; lon += 6) {
+    const zoneNum = Math.floor((Math.max(lon, -180) + 180) / 6) + 1;
+    if (zoneNum >= 1 && zoneNum <= 60 && !zones.includes(zoneNum)) {
+      zones.push(zoneNum);
     }
   }
 
-  for (let n = nMin; n <= nMax; n += majorSpacing) {
-    const pts = [];
-    const step = Math.max(majorSpacing / 20, 100);
-    for (let e = eMin; e <= eMax; e += step) {
-      try {
-        const ll = utmToLatLon(utmCenter.zone, hem, e, n);
-        if (ll.lat >= -80 && ll.lat <= 84) pts.push([ll.lat, ll.lon]);
-      } catch(_) {}
-    }
-    if (pts.length > 1) {
-      L.polyline(pts, { color, weight: 2.5, opacity, interactive: false }).addTo(mgrsGridLayer);
-    }
-  }
+  // For each zone, draw grid lines
+  zones.forEach(zone => {
+    const hem = (south + north) / 2 >= 0 ? 'N' : 'S';
+    
+    // Convert viewport corners to this zone's UTM coordinates
+    const centerLat = (south + north) / 2;
+    const centerLon = Math.max(Math.min((west + east) / 2, (zone - 1) * 6 - 180 + 6), (zone - 1) * 6 - 180);
+    
+    // Get approximate UTM bounds for this zone within the viewport
+    const swUTM = latLonToUTM(south, Math.max(west, (zone - 1) * 6 - 180));
+    const neUTM = latLonToUTM(north, Math.min(east, zone * 6 - 180));
+    
+    const majorSpacing = precision.major;
+    const minorSpacing = precision.minor;
 
-  // Draw minor grid lines (thinner, dashed)
-  if (minorSpacing) {
-    for (let e = eMin; e <= eMax; e += minorSpacing) {
-      if ((e - eMin) % majorSpacing === 0) continue; // Skip major lines
+    // Calculate grid extent with padding
+    const eMin = Math.floor(swUTM.easting / majorSpacing) * majorSpacing - majorSpacing;
+    const eMax = Math.ceil(neUTM.easting / majorSpacing) * majorSpacing + majorSpacing;
+    const nMin = Math.floor(swUTM.northing / majorSpacing) * majorSpacing - majorSpacing;
+    const nMax = Math.ceil(neUTM.northing / majorSpacing) * majorSpacing + majorSpacing;
+
+    // Draw major grid lines (thick)
+    for (let e = eMin; e <= eMax; e += majorSpacing) {
       const pts = [];
-      const step = Math.max(minorSpacing / 10, 10);
+      const step = Math.max(majorSpacing / 20, 100);
       for (let n = nMin; n <= nMax; n += step) {
         try {
-          const ll = utmToLatLon(utmCenter.zone, hem, e, n);
-          if (ll.lat >= -80 && ll.lat <= 84) pts.push([ll.lat, ll.lon]);
+          const ll = utmToLatLon(zone, hem, e, n);
+          if (ll.lat >= -80 && ll.lat <= 84 && ll.lon >= west - 1 && ll.lon <= east + 1) {
+            pts.push([ll.lat, ll.lon]);
+          }
         } catch(_) {}
       }
       if (pts.length > 1) {
-        L.polyline(pts, { color, weight: 1.2, opacity: opacity * 0.6, dashArray: '4 4', interactive: false }).addTo(mgrsGridLayer);
+        L.polyline(pts, { color, weight: 2.5, opacity, interactive: false }).addTo(mgrsGridLayer);
       }
     }
 
-    for (let n = nMin; n <= nMax; n += minorSpacing) {
-      if ((n - nMin) % majorSpacing === 0) continue;
+    for (let n = nMin; n <= nMax; n += majorSpacing) {
       const pts = [];
-      const step = Math.max(minorSpacing / 10, 10);
+      const step = Math.max(majorSpacing / 20, 100);
       for (let e = eMin; e <= eMax; e += step) {
         try {
-          const ll = utmToLatLon(utmCenter.zone, hem, e, n);
-          if (ll.lat >= -80 && ll.lat <= 84) pts.push([ll.lat, ll.lon]);
+          const ll = utmToLatLon(zone, hem, e, n);
+          if (ll.lat >= -80 && ll.lat <= 84 && ll.lon >= west - 1 && ll.lon <= east + 1) {
+            pts.push([ll.lat, ll.lon]);
+          }
         } catch(_) {}
       }
       if (pts.length > 1) {
-        L.polyline(pts, { color, weight: 1.2, opacity: opacity * 0.6, dashArray: '4 4', interactive: false }).addTo(mgrsGridLayer);
+        L.polyline(pts, { color, weight: 2.5, opacity, interactive: false }).addTo(mgrsGridLayer);
       }
     }
-  }
 
-  // Add tick labels along edges
-  addEdgeTicks(utmCenter.zone, hem, eMin, eMax, nMin, nMax, majorSpacing, bounds, color, opacity);
+    // Draw minor grid lines (thinner, dashed)
+    if (minorSpacing && zoom >= 7) {
+      for (let e = eMin; e <= eMax; e += minorSpacing) {
+        if ((e - eMin) % majorSpacing === 0) continue;
+        const pts = [];
+        const step = Math.max(minorSpacing / 10, 10);
+        for (let n = nMin; n <= nMax; n += step) {
+          try {
+            const ll = utmToLatLon(zone, hem, e, n);
+            if (ll.lat >= -80 && ll.lat <= 84 && ll.lon >= west - 1 && ll.lon <= east + 1) {
+              pts.push([ll.lat, ll.lon]);
+            }
+          } catch(_) {}
+        }
+        if (pts.length > 1) {
+          L.polyline(pts, { color, weight: 1.2, opacity: opacity * 0.6, dashArray: '4 4', interactive: false }).addTo(mgrsGridLayer);
+        }
+      }
+
+      for (let n = nMin; n <= nMax; n += minorSpacing) {
+        if ((n - nMin) % majorSpacing === 0) continue;
+        const pts = [];
+        const step = Math.max(minorSpacing / 10, 10);
+        for (let e = eMin; e <= eMax; e += step) {
+          try {
+            const ll = utmToLatLon(zone, hem, e, n);
+            if (ll.lat >= -80 && ll.lat <= 84 && ll.lon >= west - 1 && ll.lon <= east + 1) {
+              pts.push([ll.lat, ll.lon]);
+            }
+          } catch(_) {}
+        }
+        if (pts.length > 1) {
+          L.polyline(pts, { color, weight: 1.2, opacity: opacity * 0.6, dashArray: '4 4', interactive: false }).addTo(mgrsGridLayer);
+        }
+      }
+    }
+  });
 
   mgrsGridLayer.addTo(map);
-}
-
-function addEdgeTicks(zone, hem, eMin, eMax, nMin, nMax, spacing, bounds, color, opacity) {
-  const zoom = map.getZoom();
-  const labelSize = zoom >= 12 ? 10 : 9;
-  
-  // Format coordinate value for label
-  function formatCoord(val, spacing) {
-    if (spacing >= 100000) return String(Math.floor(val / 100000));
-    if (spacing >= 10000) return String(Math.floor((val % 100000) / 10000));
-    if (spacing >= 1000) return String(Math.floor((val % 100000) / 1000)).padStart(2, '0');
-    if (spacing >= 100) return String(Math.floor((val % 100000) / 100)).padStart(3, '0');
-    if (spacing >= 10) return String(Math.floor((val % 100000) / 10)).padStart(4, '0');
-    return String(Math.floor(val % 100000)).padStart(5, '0');
-  }
-
-  // Easting ticks along bottom edge
-  for (let e = eMin; e <= eMax; e += spacing) {
-    // Find where this easting line crosses the bottom of viewport
-    let bestPt = null;
-    let bestDist = Infinity;
-    const step = Math.max(spacing / 10, 10);
-    for (let n = nMin; n <= nMax; n += step) {
-      try {
-        const ll = utmToLatLon(zone, hem, e, n);
-        const dist = Math.abs(ll.lat - bounds.getSouth());
-        if (dist < bestDist && ll.lat >= bounds.getSouth() - 0.01) {
-          bestDist = dist;
-          bestPt = ll;
-        }
-      } catch(_) {}
-    }
-    
-    if (bestPt && bestDist < 1) {
-      const px = map.latLngToContainerPoint([bestPt.lat, bestPt.lng]);
-      const label = formatCoord(e, spacing);
-      
-      // Draw tick mark
-      L.marker([bestPt.lat, bestPt.lng], {
-        icon: L.divIcon({
-          className: '',
-          html: `<div style="position:absolute;left:${px.x}px;top:${px.y-8}px;width:1px;height:8px;background:${color};opacity:${opacity}"></div>`,
-          iconSize: [0, 0],
-          iconAnchor: [0, 0]
-        }),
-        interactive: false,
-        zIndexOffset: 500
-      }).addTo(mgrsGridLayer);
-      
-      // Draw label
-      L.marker([bestPt.lat, bestPt.lng], {
-        icon: L.divIcon({
-          className: 'tick-label',
-          html: `<span style="color:${color};font-size:${labelSize}px">${label}</span>`,
-          iconSize: [0, 0],
-          iconAnchor: [-px.x + map.getSize().x/2, -px.y + map.getSize().y - 20]
-        }),
-        interactive: false,
-        zIndexOffset: 600
-      }).addTo(mgrsGridLayer);
-    }
-  }
-
-  // Northing ticks along left edge
-  for (let n = nMin; n <= nMax; n += spacing) {
-    let bestPt = null;
-    let bestDist = Infinity;
-    const step = Math.max(spacing / 10, 10);
-    for (let e = eMin; e <= eMax; e += step) {
-      try {
-        const ll = utmToLatLon(zone, hem, e, n);
-        const dist = Math.abs(ll.lng - bounds.getWest());
-        if (dist < bestDist && ll.lng >= bounds.getWest() - 0.01) {
-          bestDist = dist;
-          bestPt = ll;
-        }
-      } catch(_) {}
-    }
-    
-    if (bestPt && bestDist < 1) {
-      const px = map.latLngToContainerPoint([bestPt.lat, bestPt.lng]);
-      const label = formatCoord(n, spacing);
-      
-      // Draw tick mark
-      L.marker([bestPt.lat, bestPt.lng], {
-        icon: L.divIcon({
-          className: '',
-          html: `<div style="position:absolute;left:${px.x-8}px;top:${px.y}px;width:8px;height:1px;background:${color};opacity:${opacity}"></div>`,
-          iconSize: [0, 0],
-          iconAnchor: [0, 0]
-        }),
-        interactive: false,
-        zIndexOffset: 500
-      }).addTo(mgrsGridLayer);
-      
-      // Draw label
-      L.marker([bestPt.lat, bestPt.lng], {
-        icon: L.divIcon({
-          className: 'tick-label',
-          html: `<span style="color:${color};font-size:${labelSize}px">${label}</span>`,
-          iconSize: [0, 0],
-          iconAnchor: [-20, -px.y + map.getSize().y/2]
-        }),
-        interactive: false,
-        zIndexOffset: 600
-      }).addTo(mgrsGridLayer);
-    }
-  }
 }
 
 document.getElementById('mgrs-tog').addEventListener('click',function(){
@@ -1257,31 +1168,9 @@ function drawGraticule(){
 
   for(let lon=Math.floor(bounds.getWest()/step)*step;lon<=bounds.getEast();lon+=step){
     L.polyline([[-90,lon],[90,lon]],{color,weight:1.5,interactive:false}).addTo(gratLayer);
-    if(zoom>5){
-      const px = map.latLngToContainerPoint([bounds.getSouth()+0.1,lon]);
-      L.marker([bounds.getSouth()+0.1,lon],{
-        icon:L.divIcon({
-          className:'tick-label',
-          html:`<span style="color:#6496ff;font-size:10px">${lon>0?'+':''}${lon}°</span>`,
-          iconSize:[0,0],iconAnchor:[-px.x+map.getSize().x/2,-px.y+map.getSize().y-20]
-        }),
-        interactive:false
-      }).addTo(gratLayer);
-    }
   }
   for(let lat=Math.floor(bounds.getSouth()/step)*step;lat<=bounds.getNorth();lat+=step){
     L.polyline([[lat,-180],[lat,180]],{color,weight:1.5,interactive:false}).addTo(gratLayer);
-    if(zoom>5){
-      const px = map.latLngToContainerPoint([lat,bounds.getWest()+0.1]);
-      L.marker([lat,bounds.getWest()+0.1],{
-        icon:L.divIcon({
-          className:'tick-label',
-          html:`<span style="color:#6496ff;font-size:10px">${lat>0?'+':''}${lat}°</span>`,
-          iconSize:[0,0],iconAnchor:[-20,-px.y+map.getSize().y/2]
-        }),
-        interactive:false
-      }).addTo(gratLayer);
-    }
   }
   gratLayer.addTo(map);
 }
@@ -1498,7 +1387,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='l')navigator.geolocation.getCurrentPosition(p=>flyTo(p.coords.latitude,p.coords.longitude,14));
 });
 
-notify('Welcome to GeoCommand! Grid precision adapts to zoom level.', 3500);
+notify('Welcome to GeoCommand! MGRS grid now shows properly.', 3500);
 </script>
 </body>
 </html>
