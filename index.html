@@ -276,7 +276,7 @@
     box-shadow:0 2px 8px rgba(0,0,0,0.5)
   }
 
-  /* UTM Zone label */
+  /* Grid labels — high visibility outlined text, works on any basemap */
   .utm-label{
     background:transparent;border:none;font-family:'JetBrains Mono',monospace;
     font-size:10px;color:rgba(255,184,0,0.8);font-weight:600;white-space:nowrap
@@ -284,6 +284,50 @@
   .mgrs-label{
     background:transparent;border:none;font-family:'JetBrains Mono',monospace;
     font-size:9px;color:rgba(157,111,255,0.8);font-weight:500;white-space:nowrap
+  }
+  /* Centered GZD label: big outlined pill, visible on all basemaps */
+  .gzd-label{
+    background:transparent;border:none;pointer-events:none;white-space:nowrap;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .gzd-label span{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    color:#fff;
+    text-shadow:
+      -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000,
+      0 -2px 0 #000, 0  2px 0 #000, -2px 0 0 #000, 2px 0 0 #000,
+      0 0 6px rgba(0,0,0,0.9);
+    letter-spacing:1px;
+  }
+  /* 100k square identifier label */
+  .sq100k-label{
+    background:transparent;border:none;pointer-events:none;white-space:nowrap;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .sq100k-label span{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:600;
+    color:#00ffff;
+    text-shadow:
+      -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000,
+      0 0 5px rgba(0,0,0,0.8);
+    letter-spacing:0.5px;
+  }
+  /* UTM zone center label */
+  .utm-zone-label{
+    background:transparent;border:none;pointer-events:none;white-space:nowrap;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .utm-zone-label span{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    color:#ffee00;
+    text-shadow:
+      -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000,
+      0 -2px 0 #000, 0  2px 0 #000, -2px 0 0 #000, 2px 0 0 #000,
+      0 0 8px rgba(0,0,0,1);
+    letter-spacing:1px;
   }
 
   /* Spinner */
@@ -866,43 +910,80 @@ document.getElementById('opacity-slider').addEventListener('input',function(){
 // ─── UTM GRID ─────────────────────────────────────────────────────────────
 let utmGridLayer=null,utmOn=false,utmLabelsOn=true;
 
+// UTM band letter lookup
+const UTM_BANDS='CDEFGHJKLMNPQRSTUVWX'; // 20 bands, C=-80 to X=72+
+function utmBandLetter(lat){return UTM_BANDS[Math.min(Math.floor((lat+80)/8),19)]||'';}
+
 function drawUTMGrid(){
   if(utmGridLayer){map.removeLayer(utmGridLayer);}
-  const bounds=map.getBounds(),lines=[],labels=[];
+  const bounds=map.getBounds();
   const color=document.getElementById('utm-color').value;
   const opacity=parseInt(document.getElementById('utm-opacity').value)/100;
-
-  // Zone meridians every 6°
-  for(let lon=-180;lon<=180;lon+=6){
-    if(lon>=bounds.getWest()-6&&lon<=bounds.getEast()+6){
-      lines.push([[Math.max(bounds.getSouth()-2,-84),(lon)],[Math.min(bounds.getNorth()+2,84),(lon)]]);
-      if(utmLabelsOn){
-        const zone=Math.floor((lon+180)/6)+1;
-        labels.push({lat:bounds.getSouth()+0.5,lon:lon+3,text:`${zone}N`});
-      }
-    }
-  }
-
-  // Zone parallels every 8°
-  for(let lat=-80;lat<=84;lat+=8){
-    if(lat>=bounds.getSouth()-8&&lat<=bounds.getNorth()+8){
-      lines.push([[lat,Math.max(bounds.getWest()-2,-180)],[lat,Math.min(bounds.getEast()+2,180)]]);
-      if(utmLabelsOn){
-        const letter='CDEFGHJKLMNPQRSTUVWXX'[Math.floor((lat+80)/8)];
-        labels.push({lat:lat+1,lon:bounds.getWest()+0.5,text:letter});
-      }
-    }
-  }
-
+  const zoom=map.getZoom();
   utmGridLayer=L.layerGroup();
-  lines.forEach(pts=>{
-    L.polyline(pts,{color,weight:1,opacity,dashArray:'4 4'}).addTo(utmGridLayer);
-  });
-  if(utmLabelsOn){
-    labels.forEach(l=>{
-      L.marker([l.lat,l.lon],{icon:L.divIcon({className:'utm-label',html:l.text,iconSize:null,iconAnchor:[0,0]}),interactive:false}).addTo(utmGridLayer);
-    });
+
+  // Clamp to UTM extents
+  const south=Math.max(bounds.getSouth(),-80);
+  const north=Math.min(bounds.getNorth(),84);
+  const west=Math.max(bounds.getWest(),-180);
+  const east=Math.min(bounds.getEast(),180);
+
+  // --- Zone meridian lines every 6° lon ---
+  const lonStart=Math.floor(west/6)*6;
+  const lonEnd=Math.ceil(east/6)*6;
+  for(let lon=lonStart;lon<=lonEnd;lon+=6){
+    if(lon<-180||lon>180)continue;
+    L.polyline([[Math.max(south,-80),lon],[Math.min(north,84),lon]],
+      {color,weight:1.2,opacity,dashArray:'6 4',interactive:false}).addTo(utmGridLayer);
   }
+
+  // --- Band parallel lines every 8° lat ---
+  const latStart=Math.floor(south/8)*8;
+  const latEnd=Math.ceil(north/8)*8;
+  for(let lat=latStart;lat<=latEnd;lat+=8){
+    if(lat<-80||lat>84)continue;
+    L.polyline([[lat,Math.max(west,-180)],[lat,Math.min(east,180)]],
+      {color,weight:1.2,opacity,dashArray:'6 4',interactive:false}).addTo(utmGridLayer);
+  }
+
+  // --- Centered zone labels ---
+  if(utmLabelsOn){
+    // Determine font size by zoom
+    const fontSize=zoom>=6?16:zoom>=4?13:10;
+
+    for(let lon=lonStart;lon<lonEnd;lon+=6){
+      const zoneLon=Math.max(lon,-180);
+      const zoneNum=Math.floor((zoneLon+180)/6)+1;
+      if(zoneNum<1||zoneNum>60)continue;
+      const lonCenter=Math.max(zoneLon,west)+Math.min(zoneLon+6,east);
+      const lonMid=lonCenter/2; // midpoint of visible portion
+
+      for(let lat=latStart;lat<latEnd;lat+=8){
+        const latBand=lat;
+        const latTop=Math.min(lat+8,84);
+        // Only draw label if zone square is at least partially in view
+        if(latTop<south||lat>north)continue;
+        if(zoneLon+6<west||zoneLon>east)continue;
+
+        const latMid=Math.max(lat,south)+(Math.min(latTop,north)-Math.max(lat,south))/2;
+        const band=utmBandLetter(lat+0.1);
+        if(!band)continue;
+        const label=`${zoneNum}${band}`;
+
+        L.marker([latMid,Math.max(zoneLon,west)+(Math.min(zoneLon+6,east)-Math.max(zoneLon,west))/2],{
+          icon:L.divIcon({
+            className:'utm-zone-label',
+            html:`<span style="font-size:${fontSize}px">${label}</span>`,
+            iconSize:[0,0],
+            iconAnchor:[0,0]
+          }),
+          interactive:false,
+          zIndexOffset:-100
+        }).addTo(utmGridLayer);
+      }
+    }
+  }
+
   utmGridLayer.addTo(map);
 }
 
@@ -923,6 +1004,37 @@ document.getElementById('utm-labels-tog').addEventListener('click',function(){ut
 // ─── MGRS GRID ────────────────────────────────────────────────────────────
 let mgrsGridLayer=null,mgrsOn=false;
 
+// MGRS 100k square letter sets per zone column pattern
+// Column letters: set 1 (zones 1,4,7...): ABCDEFGH, set 2 (zones 2,5,8...): JKLMNPQR, set 3 (zones 3,6,9...): STUVWXYZ
+// Row letters: odd zones: ABCDEFGHJKLMNPQRSTUV, even zones: FGHJKLMNPQRSTUVABCDE
+const MGRS_COL_LETTERS=['ABCDEFGH','JKLMNPQR','STUVWXYZ'];
+const MGRS_ROW_ODD  ='ABCDEFGHJKLMNPQRSTUV';
+const MGRS_ROW_EVEN ='FGHJKLMNPQRSTUVABCDE';
+
+function get100kColLetter(zone,colIdx){
+  const set=((zone-1)%3);
+  return MGRS_COL_LETTERS[set][colIdx%8]||'?';
+}
+function get100kRowLetter(zone,rowIdx){
+  const letters=zone%2===1?MGRS_ROW_ODD:MGRS_ROW_EVEN;
+  return letters[rowIdx%20]||'?';
+}
+
+// Convert approx 100k square origin (UTM easting/northing) to col/row indices
+function utm100kIndices(zone,easting,northing){
+  const colIdx=Math.floor((easting-100000)/100000); // 0..7 (100k-900k, central 500k)
+  const rowIdx=Math.floor((northing%2000000)/100000);
+  return{colIdx,rowIdx};
+}
+
+// Get center lat/lon of a UTM 100k square given zone, band, and square origin in UTM
+function utm100kCenterLatLon(zone,easting100k,northing100k,hem){
+  // Center of the 100k square
+  const E=easting100k+50000;
+  const N=northing100k+50000;
+  try{return utmToLatLon(zone,hem,E,N);}catch(e){return null;}
+}
+
 function drawMGRSGrid(){
   if(mgrsGridLayer){map.removeLayer(mgrsGridLayer);}
   const bounds=map.getBounds();
@@ -930,34 +1042,171 @@ function drawMGRSGrid(){
   const opacity=parseInt(document.getElementById('mgrs-opacity').value)/100;
   const precision=parseInt(document.getElementById('mgrs-precision').value);
   const zoom=map.getZoom();
-
   mgrsGridLayer=L.layerGroup();
 
-  // Draw sub-zone lines based on precision
-  const degStep=precision===100000?6:precision===10000?1:0.1;
-  const lonStep=precision===100000?6:precision===10000?1:0.1;
-  const latStep=precision===100000?8:precision===10000?1:0.1;
+  const south=Math.max(bounds.getSouth(),-80);
+  const north=Math.min(bounds.getNorth(),84);
+  const west=Math.max(bounds.getWest(),-180);
+  const east=Math.min(bounds.getEast(),180);
 
-  // Lon lines
-  const west=Math.floor(bounds.getWest()/lonStep)*lonStep;
-  const east=Math.ceil(bounds.getEast()/lonStep)*lonStep;
-  for(let lon=west;lon<=east;lon+=lonStep){
-    L.polyline([[Math.max(bounds.getSouth()-1,-80),(lon)],[Math.min(bounds.getNorth()+1,84),(lon)]],
-      {color,weight:precision===100000?1.5:0.8,opacity,dashArray:precision===100000?'':('2 3')}).addTo(mgrsGridLayer);
+  // ── ALWAYS draw GZD (Grid Zone Designator) lines ──────────────────────
+  // Vertical lines every 6° lon
+  const lonStart=Math.floor(west/6)*6;
+  const lonEnd=Math.ceil(east/6)*6;
+  for(let lon=lonStart;lon<=lonEnd;lon+=6){
+    if(lon<-180||lon>180)continue;
+    L.polyline([[south,lon],[north,lon]],
+      {color,weight:1.5,opacity,interactive:false}).addTo(mgrsGridLayer);
+  }
+  // Horizontal lines every 8° lat
+  const latStart=Math.floor(south/8)*8;
+  const latEnd=Math.ceil(north/8)*8;
+  for(let lat=latStart;lat<=latEnd;lat+=8){
+    if(lat<-80||lat>84)continue;
+    L.polyline([[lat,west],[lat,east]],
+      {color,weight:1.5,opacity,interactive:false}).addTo(mgrsGridLayer);
   }
 
-  // Lat lines
-  const south=Math.floor(bounds.getSouth()/latStep)*latStep;
-  const north=Math.ceil(bounds.getNorth()/latStep)*latStep;
-  for(let lat=south;lat<=north;lat+=latStep){
-    L.polyline([(lat),Math.max(bounds.getWest()-1,-180),(lat),Math.min(bounds.getEast()+1,180)].length>0?
-      [[lat,Math.max(bounds.getWest()-1,-180)],[lat,Math.min(bounds.getEast()+1,180)]]:
-      [[lat,-180],[lat,180]],
-      {color,weight:precision===100000?1.5:0.8,opacity,dashArray:precision===100000?'':('2 3')}).addTo(mgrsGridLayer);
-    // Labels
-    if(zoom>6){
-      const letter='CDEFGHJKLMNPQRSTUVWXX'[Math.floor((lat+80)/8)];
-      L.marker([lat+latStep/2,bounds.getWest()+0.2],{icon:L.divIcon({className:'mgrs-label',html:letter,iconSize:null}),interactive:false}).addTo(mgrsGridLayer);
+  // ── GZD labels — centered in each zone square ─────────────────────────
+  // Show GZD at all zoom levels when MGRS is on; size scales with zoom
+  {
+    const gzdFontSize=zoom>=7?18:zoom>=5?15:zoom>=3?12:10;
+    for(let lon=lonStart;lon<lonEnd;lon+=6){
+      const zoneNum=Math.floor((Math.max(lon,-180)+180)/6)+1;
+      if(zoneNum<1||zoneNum>60)continue;
+      for(let lat=latStart;lat<latEnd;lat+=8){
+        const latTop=Math.min(lat+8,84);
+        if(latTop<south||lat>north)continue;
+        if(lon+6<west||lon>east)continue;
+        const band=utmBandLetter(lat+0.1);
+        if(!band)continue;
+
+        // Center of the visible portion of the GZD square
+        const latMid=(Math.max(lat,south)+Math.min(latTop,north))/2;
+        const lonMid=(Math.max(lon,west)+Math.min(lon+6,east))/2;
+        const gzd=`${zoneNum}${band}`;
+
+        L.marker([latMid,lonMid],{
+          icon:L.divIcon({
+            className:'gzd-label',
+            html:`<span style="font-size:${gzdFontSize}px">${gzd}</span>`,
+            iconSize:[0,0],iconAnchor:[0,0]
+          }),
+          interactive:false,zIndexOffset:100
+        }).addTo(mgrsGridLayer);
+      }
+    }
+  }
+
+  // ── 100k square grid lines and labels — show at zoom >= 6 ─────────────
+  if(zoom>=6){
+    // Sub-divide each GZD into 100k squares via UTM
+    for(let lon=lonStart;lon<lonEnd;lon+=6){
+      const zoneNum=Math.floor((Math.max(lon,-180)+180)/6)+1;
+      if(zoneNum<1||zoneNum>60)continue;
+
+      for(let lat=latStart;lat<latEnd;lat+=8){
+        const latTop=Math.min(lat+8,84);
+        if(latTop<south||lat>north)continue;
+        if(lon+6<west||lon>east)continue;
+        const band=utmBandLetter(lat+0.1);
+        if(!band)continue;
+        const hem=lat>=0?'N':'S';
+
+        // Determine UTM northing range for this band
+        const utmSW=latLonToUTM(Math.max(lat,south),Math.max(lon,west)+0.01);
+        const utmNE=latLonToUTM(Math.min(latTop,north)-0.01,Math.min(lon+6,east)-0.01);
+
+        const eMin=100000,eMax=900000; // valid UTM easting range
+        const nMin=Math.floor(utmSW.northing/100000)*100000;
+        const nMax=Math.ceil(utmNE.northing/100000)*100000;
+
+        // Draw 100k easting lines
+        for(let e=eMin;e<=eMax;e+=100000){
+          const pts=[];
+          for(let n=nMin;n<=nMax;n+=50000){
+            try{
+              const ll=utmToLatLon(zoneNum,hem,e,n);
+              if(ll.lat>=-80&&ll.lat<=84)pts.push([ll.lat,ll.lon]);
+            }catch(_){}
+          }
+          if(pts.length>1)L.polyline(pts,{color,weight:0.7,opacity:opacity*0.7,dashArray:'3 4',interactive:false}).addTo(mgrsGridLayer);
+        }
+
+        // Draw 100k northing lines
+        for(let n=nMin;n<=nMax;n+=100000){
+          const pts=[];
+          for(let e=eMin;e<=eMax;e+=50000){
+            try{
+              const ll=utmToLatLon(zoneNum,hem,e,n);
+              if(ll.lat>=-80&&ll.lat<=84)pts.push([ll.lat,ll.lon]);
+            }catch(_){}
+          }
+          if(pts.length>1)L.polyline(pts,{color,weight:0.7,opacity:opacity*0.7,dashArray:'3 4',interactive:false}).addTo(mgrsGridLayer);
+        }
+
+        // ── 100k square identifier labels ────────────────────────────────
+        if(zoom>=6){
+          const sqFontSize=zoom>=10?14:zoom>=8?12:10;
+          for(let e=eMin;e<eMax;e+=100000){
+            for(let n=nMin;n<nMax;n+=100000){
+              // Center of 100k square
+              const eCtr=e+50000,nCtr=n+50000;
+              try{
+                const ll=utmToLatLon(zoneNum,hem,eCtr,nCtr);
+                if(ll.lat<south||ll.lat>north||ll.lon<west||ll.lon>east)continue;
+                if(ll.lat<-80||ll.lat>84)continue;
+
+                const {colIdx,rowIdx}=utm100kIndices(zoneNum,e,n);
+                const colL=get100kColLetter(zoneNum,colIdx);
+                const rowL=get100kRowLetter(zoneNum,rowIdx);
+
+                L.marker([ll.lat,ll.lon],{
+                  icon:L.divIcon({
+                    className:'sq100k-label',
+                    html:`<span style="font-size:${sqFontSize}px">${colL}${rowL}</span>`,
+                    iconSize:[0,0],iconAnchor:[0,0]
+                  }),
+                  interactive:false,zIndexOffset:200
+                }).addTo(mgrsGridLayer);
+              }catch(_){}
+            }
+          }
+        }
+      }
+    }
+
+    // ── 10k and 1k sub-grid lines at high zoom ───────────────────────────
+    if(precision<=10000&&zoom>=9){
+      const subStep=precision<=1000?1000:10000;
+      const subColor=color;
+      // Sample a few UTM zones in view
+      for(let lon=lonStart;lon<lonEnd;lon+=6){
+        const zoneNum=Math.floor((Math.max(lon,-180)+180)/6)+1;
+        if(zoneNum<1||zoneNum>60)continue;
+        const hem=south>=0?'N':'S';
+        const refUtm=latLonToUTM((south+north)/2,(west+east)/2);
+        const eMin2=Math.floor(refUtm.easting/100000)*100000;
+        const eMax2=eMin2+100000;
+        const nMin2=Math.floor(refUtm.northing/100000)*100000;
+        const nMax2=nMin2+100000;
+
+        for(let e=eMin2;e<=eMax2;e+=subStep){
+          const pts=[];
+          for(let n=nMin2;n<=nMax2;n+=subStep/2){
+            try{const ll=utmToLatLon(refUtm.zone,hem,e,n);if(ll.lat>=south&&ll.lat<=north)pts.push([ll.lat,ll.lon]);}catch(_){}
+          }
+          if(pts.length>1)L.polyline(pts,{color:subColor,weight:0.5,opacity:opacity*0.5,dashArray:'2 4',interactive:false}).addTo(mgrsGridLayer);
+        }
+        for(let n=nMin2;n<=nMax2;n+=subStep){
+          const pts=[];
+          for(let e=eMin2;e<=eMax2;e+=subStep/2){
+            try{const ll=utmToLatLon(refUtm.zone,hem,e,n);if(ll.lon>=west&&ll.lon<=east)pts.push([ll.lat,ll.lon]);}catch(_){}
+          }
+          if(pts.length>1)L.polyline(pts,{color:subColor,weight:0.5,opacity:opacity*0.5,dashArray:'2 4',interactive:false}).addTo(mgrsGridLayer);
+        }
+        break; // only do the central zone to avoid overload
+      }
     }
   }
 
@@ -989,11 +1238,11 @@ function drawGraticule(){
 
   for(let lon=Math.floor(bounds.getWest()/step)*step;lon<=bounds.getEast();lon+=step){
     L.polyline([[-90,lon],[90,lon]],{color,weight:0.5,interactive:false}).addTo(gratLayer);
-    if(zoom>5)L.marker([bounds.getSouth()+0.1,lon],{icon:L.divIcon({className:'utm-label',html:`${lon>0?'+':''}${lon}°`,iconSize:null}),interactive:false}).addTo(gratLayer);
+    if(zoom>5)L.marker([bounds.getSouth()+0.1,lon],{icon:L.divIcon({className:'gzd-label',html:`<span style="font-size:10px">${lon>0?'+':''}${lon}°</span>`,iconSize:[0,0],iconAnchor:[0,0]}),interactive:false}).addTo(gratLayer);
   }
   for(let lat=Math.floor(bounds.getSouth()/step)*step;lat<=bounds.getNorth();lat+=step){
     L.polyline([[lat,-180],[lat,180]],{color,weight:0.5,interactive:false}).addTo(gratLayer);
-    if(zoom>5)L.marker([lat,bounds.getWest()+0.1],{icon:L.divIcon({className:'utm-label',html:`${lat>0?'+':''}${lat}°`,iconSize:null}),interactive:false}).addTo(gratLayer);
+    if(zoom>5)L.marker([lat,bounds.getWest()+0.1],{icon:L.divIcon({className:'gzd-label',html:`<span style="font-size:10px">${lat>0?'+':''}${lat}°</span>`,iconSize:[0,0],iconAnchor:[0,0]}),interactive:false}).addTo(gratLayer);
   }
   gratLayer.addTo(map);
 }
