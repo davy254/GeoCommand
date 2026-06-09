@@ -236,10 +236,10 @@
   }
   #crosshair.show{display:block}
   #crosshair::before,#crosshair::after{
-    content:'';position:absolute;background:var(--accent);opacity:0.7
+    content:'';position:absolute;background:var(--red);opacity:0.9
   }
-  #crosshair::before{width:20px;height:1px;top:0;left:-10px}
-  #crosshair::after{width:1px;height:20px;top:-10px;left:0}
+  #crosshair::before{width:20px;height:2px;top:0;left:-10px}
+  #crosshair::after{width:2px;height:20px;top:-10px;left:0}
 
   /* Notification */
   #notif{
@@ -276,38 +276,56 @@
     box-shadow:0 2px 8px rgba(0,0,0,0.5)
   }
 
-  /* Grid labels — high visibility outlined text, works on any basemap */
-  /* legacy utm/mgrs plain label — kept for graticule fallback */
-  .utm-label{background:transparent;border:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,184,0,0.8);font-weight:600;white-space:nowrap}
-  .mgrs-label{background:transparent;border:none;font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(157,111,255,0.8);font-weight:500;white-space:nowrap}
-  /* ═══ MGRS / UTM Grid label system — GISsurfer matched ═══ */
-  /* GZD and 100k labels: white text, black outline — readable on any basemap */
-  .gzd-label{background:transparent;border:none;pointer-events:none;white-space:nowrap;display:flex;align-items:center;justify-content:center;}
-  .gzd-label span{font-family:'JetBrains Mono',monospace;font-weight:800;color:#fff;
-    text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000,0 0 8px #000;letter-spacing:1.5px;}
-  .sq100k-label{background:transparent;border:none;pointer-events:none;white-space:nowrap;display:flex;align-items:center;justify-content:center;}
-  .sq100k-label span{font-family:'JetBrains Mono',monospace;font-weight:800;color:#fff;
-    text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000,0 0 8px #000;letter-spacing:1px;}
-  .utm-zone-label{background:transparent;border:none;pointer-events:none;white-space:nowrap;display:flex;align-items:center;justify-content:center;}
-  .utm-zone-label span{font-family:'JetBrains Mono',monospace;font-weight:800;color:#ffee00;
-    text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000,0 0 10px #000;letter-spacing:1px;}
-  /* Axis tick labels — GISsurfer uses small dark-bg chips pinned to the map edges */
-  .tick-e-lbl{
-    background:rgba(0,0,0,0.82);border-left:2px solid #00d4ff;
-    padding:1px 4px 1px 3px;pointer-events:none;white-space:nowrap;
-    font-family:'JetBrains Mono',monospace;font-weight:700;color:#00ffff;line-height:1.3;
+  /* Grid labels - GISsurfer style */
+  .hundredkm-label{
+    background:rgba(0,255,136,0.9);
+    color:#000;
+    padding:3px 6px;
+    border-radius:2px;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:11px;
+    white-space:nowrap;
+    pointer-events:none;
+    border:1px solid rgba(0,0,0,0.3);
   }
-  .tick-n-lbl{
-    background:rgba(0,0,0,0.82);border-left:2px solid #ffee00;
-    padding:1px 4px 1px 3px;pointer-events:none;white-space:nowrap;
-    font-family:'JetBrains Mono',monospace;font-weight:700;color:#ffee00;line-height:1.3;
+  
+  .tick-label-east{
+    background:#00d4ff;
+    color:#000;
+    padding:2px 5px;
+    border-radius:2px;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:10px;
+    white-space:nowrap;
+    pointer-events:none;
+    box-shadow:0 1px 3px rgba(0,0,0,0.5);
   }
-  /* legacy */
-  .utm-label{background:transparent;border:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,184,0,0.8);font-weight:600;white-space:nowrap}
-  .mgrs-label{background:transparent;border:none;font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(157,111,255,0.8);font-weight:500;white-space:nowrap}
+  
+  .tick-label-north{
+    background:#ffb800;
+    color:#000;
+    padding:2px 5px;
+    border-radius:2px;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:10px;
+    white-space:nowrap;
+    pointer-events:none;
+    box-shadow:0 1px 3px rgba(0,0,0,0.5);
+  }
 
-  /* ── Per-level grid panes — CSS opacity transition drives the GISsurfer-like fade ── */
-  .grid-pane { transition: opacity 0.25s ease-out; }
+  /* Grid level indicator */
+  #grid-level-indicator{
+    position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+    background:rgba(0,0,0,0.85);color:#fff;
+    padding:4px 12px;border-radius:4px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;font-weight:600;
+    z-index:1000;pointer-events:none;
+    border:1px solid rgba(255,255,255,0.2);
+  }
 
   /* Spinner */
   .spinner{
@@ -340,7 +358,7 @@
         <div id="logo-icon">🌐</div>
         <div>
           <h1>GeoCommand</h1>
-          <span>Advanced Basemap Viewer v2.3</span>
+          <span>Advanced Basemap Viewer v2.5</span>
         </div>
       </div>
       <div id="status-bar">
@@ -455,11 +473,11 @@
           </div>
           <div class="opt-row">
             <span class="opt-label">Opacity</span>
-            <input type="range" id="utm-opacity" min="10" max="100" value="50">
-            <span class="opt-val" id="utm-opacity-val">50%</span>
+            <input type="range" id="utm-opacity" min="10" max="100" value="60">
+            <span class="opt-val" id="utm-opacity-val">60%</span>
           </div>
           <div class="opt-row">
-            <span class="opt-label">Show Zone Labels</span>
+            <span class="opt-label">Show Labels</span>
             <button class="tog on" id="utm-labels-tog" aria-label="Toggle UTM labels"></button>
           </div>
         </div>
@@ -478,21 +496,29 @@
           <div class="opt-row">
             <span class="opt-label">Line Color</span>
             <select id="mgrs-color">
-              <option value="#ff3333" selected>Red</option>
+              <option value="#000000" selected>Black</option>
+              <option value="#ff3333">Red</option>
               <option value="#9d6fff">Purple</option>
               <option value="#00d4ff">Cyan</option>
               <option value="#00ff88">Green</option>
-              <option value="#ffb800">Amber</option>
             </select>
           </div>
           <div class="opt-row">
             <span class="opt-label">Opacity</span>
-            <input type="range" id="mgrs-opacity" min="10" max="100" value="40">
-            <span class="opt-val" id="mgrs-opacity-val">40%</span>
+            <input type="range" id="mgrs-opacity" min="10" max="100" value="80">
+            <span class="opt-val" id="mgrs-opacity-val">80%</span>
           </div>
           <div class="opt-row">
-            <span class="opt-label">Auto precision by zoom</span>
-            <span class="opt-val" id="mgrs-zoom-level" style="color:var(--green);font-size:10px">AUTO</span>
+            <span class="opt-label">Grid Precision</span>
+            <select id="mgrs-precision">
+              <option value="auto" selected>Auto (Zoom-based)</option>
+              <option value="100000">100km only</option>
+              <option value="10000">+ 10km</option>
+              <option value="1000">+ 1km</option>
+              <option value="100">+ 100m</option>
+              <option value="10">+ 10m</option>
+              <option value="1">+ 1m</option>
+            </select>
           </div>
         </div>
 
@@ -558,7 +584,7 @@
               <div class="toggle-sub">Always-visible center marker</div>
             </div>
           </div>
-          <button class="tog" id="cross-tog" aria-label="Toggle crosshair"></button>
+          <button class="tog on" id="cross-tog" aria-label="Toggle crosshair"></button>
         </div>
 
         <!-- Follow GPS -->
@@ -605,9 +631,10 @@
     </div><!-- /scroll-area -->
   </div><!-- /sidebar -->
 
-  <!-- ─── MAP ─── -->
+  <!-- ─── MAP ── -->
   <div id="map"></div>
-  <div id="crosshair"></div>
+  <div id="crosshair" class="show"></div>
+  <div id="grid-level-indicator">100km Grid</div>
 
   <!-- Map FAB controls -->
   <div id="map-controls">
@@ -623,13 +650,13 @@
     UTM: <kbd>36N 250000 9850000</kbd><br>
     MGRS: <kbd>36MYE 12345 67890</kbd><br>
     Place: Any city/landmark<br><br>
-    <strong>MGRS Auto Grid:</strong><br>
-    z0–6 → 100km GZD<br>
-    z7–9 → + 10km<br>
-    z10–12 → + 1km<br>
-    z13–15 → + 100m<br>
-    z16–18 → + 10m<br>
-    z19+ → + 1m<br><br>
+    <strong>Grid Precision:</strong><br>
+    zoom 5-6 → 100km<br>
+    zoom 7-8 → 10km<br>
+    zoom 9-10 → 1km<br>
+    zoom 11-12 → 100m<br>
+    zoom 13-14 → 10m<br>
+    zoom 15+ → 1m<br><br>
     <strong>Shortcuts:</strong><br>
     <kbd>/</kbd> Search &nbsp; <kbd>h</kbd> Home<br>
     <kbd>l</kbd> My Location<br>
@@ -640,52 +667,25 @@
 
 <!-- Scripts -->
 <script>
-// ─── CONFIG ───────────────────────────────────────────────────────────────
+// ─── CONFIG ──────────────────────────────────────────────────────────────
 const BASEMAPS = {
-  osm:{
-    url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    attr:'© <a href="https://openstreetmap.org">OpenStreetMap</a>',maxZoom:19
-  },
-  satellite:{
-    url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attr:'© Esri',maxZoom:19
-  },
-  topo:{
-    url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-    attr:'© OpenTopoMap',maxZoom:17
-  },
-  dark:{
-    url:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    attr:'© CartoDB',maxZoom:19
-  },
-  terrain:{
-    url:'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg',
-    attr:'© Stamen Design',maxZoom:18
-  },
-  hybrid:{
-    url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attr:'© Esri',maxZoom:19,overlay:true
-  },
-  nautical:{
-    url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    attr:'© OpenStreetMap + OpenSeaMap',maxZoom:18
-  },
-  light:{
-    url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    attr:'© CartoDB',maxZoom:19
-  }
+  osm:{url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',attr:'© <a href="https://openstreetmap.org">OpenStreetMap</a>',maxZoom:19},
+  satellite:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attr:'© Esri',maxZoom:19},
+  topo:{url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',attr:'© OpenTopoMap',maxZoom:17},
+  dark:{url:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',attr:'© CartoDB',maxZoom:19},
+  terrain:{url:'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg',attr:'© Stamen Design',maxZoom:18},
+  hybrid:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attr:'© Esri',maxZoom:19,overlay:true},
+  nautical:{url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',attr:'© OpenStreetMap + OpenSeaMap',maxZoom:18},
+  light:{url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',attr:'© CartoDB',maxZoom:19}
 };
 
 // ─── MAP INIT ─────────────────────────────────────────────────────────────
-const map = L.map('map',{
-  center:[20,20],zoom:3,
-  zoomControl:true,
-  attributionControl:true
-});
+const map = L.map('map',{center:[0.5,37],zoom:7,zoomControl:true,attributionControl:true});
 L.control.scale({imperial:true,metric:true,position:'bottomleft'}).addTo(map);
 
-let currentBasemap = L.tileLayer(BASEMAPS.osm.url,{attribution:BASEMAPS.osm.attr,maxZoom:19}).addTo(map);
+let currentBasemap = L.tileLayer(BASEMAPS.satellite.url,{attribution:BASEMAPS.satellite.attr,maxZoom:19}).addTo(map);
 let hybridLabels = null;
+let nauticalOverlay = null;
 
 // ─── UTM MATH ─────────────────────────────────────────────────────────────
 function latLonToUTM(lat,lon){
@@ -701,7 +701,7 @@ function latLonToUTM(lat,lon){
   const E=k0*N*(A+(1-T+C)*A**3/6+(5-18*T+T**2+72*C-58*e2/(1-e2))*A**5/120)+FE;
   const No=k0*(M+N*Math.tan(latR)*(A**2/2+(5-T+9*C+4*C**2)*A**4/24+(61-58*T+T**2+600*C-330*e2/(1-e2))*A**6/720))+FN;
   const letter='CDEFGHJKLMNPQRSTUVWXX'[Math.floor((lat+80)/8)];
-  return{zone,letter,easting:Math.round(E),northing:Math.round(No)};
+  return{zone,letter,easting:Math.round(E),northing:Math.round(No),hem:lat<0?'S':'N'};
 }
 
 function utmToLatLon(zone,hem,E,N){
@@ -740,50 +740,30 @@ function parseMGRS(str){
   str=str.replace(/\s/g,'').toUpperCase();
   const m=str.match(/^(\d{1,2})([C-X])([A-Z]{2})(\d{4,10})$/);
   if(!m)return null;
-  const zone=parseInt(m[1]),band=m[2],sq=m[3];
-  const digits=m[4],half=digits.length/2;
-  const E=parseInt(digits.slice(0,half)),N=parseInt(digits.slice(half));
-  // Approximate conversion
+  const zone=parseInt(m[1]),band=m[2];
   const lon0=(zone-1)*6-180+3;
-  const lat=latBandToLat(band);
+  const bands='CDEFGHJKLMNPQRSTUVWX';
+  const i=bands.indexOf(band);
+  const lat=-80+i*8+4;
   return{lat,lon:lon0};
 }
 
-function latBandToLat(b){
-  const bands='CDEFGHJKLMNPQRSTUVWX';
-  const i=bands.indexOf(b);
-  return-80+i*8+4;
-}
-
-// ─── PARSE COORDINATE ─────────────────────────────────────────────────────
 function parseCoord(str,hint){
   str=str.trim();
-
-  // MGRS
   const mgrs=str.match(/^(\d{1,2})\s*([C-HJ-NP-X])\s*([A-HJ-NP-Z]{2})\s*([\d\s]{4,10})$/i);
   if(mgrs||(hint==='mgrs')){
-    if(mgrs){
-      const res=parseMGRS(str);
-      if(res)return{...res,type:'MGRS',label:str.toUpperCase()};
-    }
+    if(mgrs){const res=parseMGRS(str);if(res)return{...res,type:'MGRS',label:str.toUpperCase()};}
   }
-
-  // UTM: 36N 250000 9850000 or 36N 250000E 9850000N
   const utm=str.match(/^(\d{1,2})\s*([NSEW])\s+([\d.]+)\s+([\d.]+)$/i);
   if(utm||hint==='utm'){
     if(utm){
       const zone=parseInt(utm[1]),hem=utm[2].toUpperCase()==='S'?'S':'N';
-      const E=parseFloat(utm[3]),N=parseFloat(utm[4]);
-      const res=utmToLatLon(zone,hem,E,N);
-      return{...res,type:'UTM',label:`${utm[1]}${utm[2].toUpperCase()} ${E}E ${N}N`};
+      const res=utmToLatLon(zone,hem,parseFloat(utm[3]),parseFloat(utm[4]));
+      return{...res,type:'UTM',label:`${utm[1]}${utm[2].toUpperCase()} ${utm[3]}E ${utm[4]}N`};
     }
   }
-
-  // GPS decimal: lat, lon
   const gps=str.match(/^(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)$/);
   if(gps){return{lat:parseFloat(gps[1]),lon:parseFloat(gps[2]),type:'GPS',label:`${gps[1]}, ${gps[2]}`};}
-
-  // DMS
   const dms=str.match(/(\d+)[°d]\s*(\d+)['']\s*(\d+(?:\.\d+)?)[""]\s*([NS])\s*(\d+)[°d]\s*(\d+)['']\s*(\d+(?:\.\d+)?)[""]\s*([EW])/i);
   if(dms){
     let lat=parseFloat(dms[1])+parseFloat(dms[2])/60+parseFloat(dms[3])/3600;
@@ -792,19 +772,15 @@ function parseCoord(str,hint){
     if(dms[8].toUpperCase()==='W')lon*=-1;
     return{lat,lon,type:'DMS',label:str};
   }
-
   return null;
 }
 
 // ─── SEARCH ───────────────────────────────────────────────────────────────
-let searchType='auto';
-let searchMarker=null;
-
+let searchType='auto', searchMarker=null;
 document.querySelectorAll('.stype-btn').forEach(b=>{
   b.addEventListener('click',()=>{
     document.querySelectorAll('.stype-btn').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    searchType=b.dataset.type;
+    b.classList.add('active');searchType=b.dataset.type;
   });
 });
 
@@ -812,25 +788,18 @@ async function doSearch(){
   const val=document.getElementById('search-input').value.trim();
   if(!val)return;
   const res=document.getElementById('search-result');
-  res.className='show';
-  res.innerHTML='<span class="spinner"></span> Searching…';
+  res.className='show';res.innerHTML='<span class="spinner"></span> Searching…';
 
-  // Try coordinate parse first
   if(searchType!=='place'){
     const coord=parseCoord(val,searchType==='auto'?null:searchType);
     if(coord){
       flyTo(coord.lat,coord.lon,14);
-      res.innerHTML=`<div class="res-name">${coord.type} Match</div>
-        <div>Lat: <span class="res-val">${coord.lat.toFixed(6)}</span></div>
-        <div>Lon: <span class="res-val">${coord.lon.toFixed(6)}</span></div>
-        <div>Label: <span class="res-val">${coord.label}</span></div>`;
+      res.innerHTML=`<div class="res-name">${coord.type} Match</div><div>Lat: <span class="res-val">${coord.lat.toFixed(6)}</span></div><div>Lon: <span class="res-val">${coord.lon.toFixed(6)}</span></div><div>Label: <span class="res-val">${coord.label}</span></div>`;
       if(searchMarker)map.removeLayer(searchMarker);
       searchMarker=L.marker([coord.lat,coord.lon],{icon:L.divIcon({className:'',html:'<div class="search-marker-icon"></div>',iconSize:[24,24],iconAnchor:[12,24]})}).addTo(map);
       return;
     }
   }
-
-  // Nominatim geocoding
   try{
     const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(val)}&limit=1`,{headers:{'Accept-Language':'en'}});
     const data=await r.json();
@@ -839,542 +808,650 @@ async function doSearch(){
       flyTo(parseFloat(p.lat),parseFloat(p.lon),12);
       if(searchMarker)map.removeLayer(searchMarker);
       searchMarker=L.marker([parseFloat(p.lat),parseFloat(p.lon)],{icon:L.divIcon({className:'',html:'<div class="search-marker-icon"></div>',iconSize:[24,24],iconAnchor:[12,24]})}).addTo(map);
-      res.innerHTML=`<div class="res-name">${p.display_name.split(',').slice(0,2).join(',')}</div>
-        <div>Lat: <span class="res-val">${parseFloat(p.lat).toFixed(5)}</span> / Lon: <span class="res-val">${parseFloat(p.lon).toFixed(5)}</span></div>
-        <div>Type: <span class="res-val">${p.type}</span></div>`;
-    } else {
-      res.innerHTML='<span style="color:var(--red)">No results found. Try different input.</span>';
-    }
-  }catch(e){
-    res.innerHTML='<span style="color:var(--red)">Search failed — check connection.</span>';
-  }
+      res.innerHTML=`<div class="res-name">${p.display_name.split(',').slice(0,2).join(',')}</div><div>Lat: <span class="res-val">${parseFloat(p.lat).toFixed(5)}</span> / Lon: <span class="res-val">${parseFloat(p.lon).toFixed(5)}</span></div><div>Type: <span class="res-val">${p.type}</span></div>`;
+    } else {res.innerHTML='<span style="color:var(--red)">No results found.</span>';}
+  }catch(e){res.innerHTML='<span style="color:var(--red)">Search failed.</span>';}
 }
-
 document.getElementById('search-btn').addEventListener('click',doSearch);
 document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
 
-// ─── FLY TO ───────────────────────────────────────────────────────────────
-function flyTo(lat,lon,zoom=14){
-  map.flyTo([lat,lon],zoom,{duration:1.2,easeLinearity:0.5});
-  updateInfoPanel(lat,lon);
-}
+function flyTo(lat,lon,zoom=14){map.flyTo([lat,lon],zoom,{duration:1.2,easeLinearity:0.5});updateInfoPanel(lat,lon);}
 
 // ─── BASEMAP SWITCHER ─────────────────────────────────────────────────────
+let activeBasemapKey = 'satellite';
 document.querySelectorAll('.bm-card').forEach(card=>{
   card.addEventListener('click',()=>{
     document.querySelectorAll('.bm-card').forEach(c=>c.classList.remove('active'));
     card.classList.add('active');
-    const bm=card.dataset.bm;
-    switchBasemap(bm);
+    activeBasemapKey = card.dataset.bm;
+    switchBasemap(activeBasemapKey, card);
   });
 });
 
-function switchBasemap(bm){
+function switchBasemap(bm, card){
   map.removeLayer(currentBasemap);
   if(hybridLabels){map.removeLayer(hybridLabels);hybridLabels=null;}
+  if(nauticalOverlay){map.removeLayer(nauticalOverlay);nauticalOverlay=null;}
+  
   const cfg=BASEMAPS[bm];
   currentBasemap=L.tileLayer(cfg.url,{attribution:cfg.attr,maxZoom:cfg.maxZoom||18}).addTo(map);
-  if(bm==='hybrid'){
-    hybridLabels=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19,opacity:0.8}).addTo(map);
-  }
-  if(bm==='nautical'){
-    L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',{attribution:'© OpenSeaMap',maxZoom:18,opacity:0.7}).addTo(map);
-  }
+  if(bm==='hybrid') hybridLabels=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19,opacity:0.8}).addTo(map);
+  if(bm==='nautical') nauticalOverlay=L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',{attribution:'© OpenSeaMap',maxZoom:18,opacity:0.7}).addTo(map);
+  
   currentBasemap.setOpacity(parseInt(document.getElementById('opacity-slider').value)/100);
   notify(`Basemap: ${card ? card.querySelector('.bm-name').textContent : bm}`);
 }
-
 document.getElementById('opacity-slider').addEventListener('input',function(){
   document.getElementById('opacity-val').textContent=this.value+'%';
   currentBasemap.setOpacity(this.value/100);
 });
 
-// ─── SHARED GRID CONSTANTS ────────────────────────────────────────────────────
+// ─── DEBOUNCE UTILITY ─────────────────────────────────────────────────────
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
+// ─── UTM GRID ─────────────────────────────────────────────────────────────
+let utmGridLayer=null,utmOn=false,utmLabelsOn=true;
 const UTM_BANDS='CDEFGHJKLMNPQRSTUVWX';
 function utmBandLetter(lat){return UTM_BANDS[Math.min(Math.floor((lat+80)/8),19)]||'';}
 
-const MGRS_COL_LETTERS=['ABCDEFGH','JKLMNPQR','STUVWXYZ'];
-const MGRS_ROW_ODD ='ABCDEFGHJKLMNPQRSTUV';
-const MGRS_ROW_EVEN='FGHJKLMNPQRSTUVABCDE';
-function get100kColLetter(zone,colIdx){return MGRS_COL_LETTERS[((zone-1)%3)][colIdx%8]||'?';}
-function get100kRowLetter(zone,rowIdx){return(zone%2===1?MGRS_ROW_ODD:MGRS_ROW_EVEN)[rowIdx%20]||'?';}
-function utm100kIndices(zone,easting,northing){
-  return{colIdx:Math.floor((easting-100000)/100000),rowIdx:Math.floor((northing%2000000)/100000)};
-}
-function utm100kCenterLatLon(zone,e100k,n100k,hem){
-  try{return utmToLatLon(zone,hem,e100k+50000,n100k+50000);}catch(e){return null;}
-}
-function sampleRes(step){
-  if(step>=100000)return 10000;if(step>=10000)return 2000;
-  if(step>=1000)return 200;if(step>=100)return 20;
-  if(step>=10)return 5;return 1;
-}
-function utmLine_E(z,h,e,nMin,nMax,res){
-  const pts=[];
-  for(let n=nMin;n<=nMax+res;n+=res){
-    try{const ll=utmToLatLon(z,h,e,n);if(ll.lat>=-80&&ll.lat<=84)pts.push([ll.lat,ll.lon]);}catch(_){}
-  }
-  return pts;
-}
-function utmLine_N(z,h,n,eMin,eMax,res){
-  const pts=[];
-  for(let e=eMin;e<=eMax+res;e+=res){
-    if(e<100000||e>900000)continue;
-    try{const ll=utmToLatLon(z,h,e,n);if(ll.lat>=-80&&ll.lat<=84)pts.push([ll.lat,ll.lon]);}catch(_){}
-  }
-  return pts;
-}
-
-// ─── GRID LEVEL TABLE ────────────────────────────────────────────────────────
-// Matching GISsurfer exactly from the reference PDF/video:
-//   z0-5:   GZD only  (100km boundaries + 2-letter 100k IDs)
-//   z6-8:   100km grid visible, 100k IDs prominent
-//   z9-11:  10km grid fades in, GZD labels fade out
-//   z12-14: 1km grid fades in, 10km still visible
-//   z15-17: 100m grid fades in
-//   z18-19: 10m grid fades in
-//   z20+:   1m grid
-//
-// Each level has:
-//   minZ   = zoom where it starts fading IN
-//   fullZ  = zoom where it is fully opaque
-//   fadeZ  = zoom where it starts fading OUT
-//   goneZ  = zoom where it is fully gone
-//   w      = line weight (px) — all same colour, all solid per GISsurfer
-//   ts     = trailing-zero suffix stripped from tick labels
-
-const GRID_LEVELS=[
-  // GZD  — always visible until ~z9, fades as 10km takes over
-  {step:100000,minZ:0, fullZ:1, fadeZ:8, goneZ:10, w:2.5, ts:'00000', name:'GZD',  pane:'gp100k'},
-  // 100km square sub-grid (= 10km lines inside GZD) — appears z6, fades z13
-  {step:10000, minZ:5, fullZ:7, fadeZ:12,goneZ:14, w:1.8, ts:'0000',  name:'10km', pane:'gp10k' },
-  // 1km
-  {step:1000,  minZ:9, fullZ:11,fadeZ:15,goneZ:17, w:1.4, ts:'000',   name:'1km',  pane:'gp1k'  },
-  // 100m
-  {step:100,   minZ:13,fullZ:15,fadeZ:18,goneZ:20, w:1.0, ts:'00',    name:'100m', pane:'gp100m'},
-  // 10m
-  {step:10,    minZ:16,fullZ:18,fadeZ:22,goneZ:24, w:0.8, ts:'0',     name:'10m',  pane:'gp10m' },
-  // 1m
-  {step:1,     minZ:19,fullZ:20,fadeZ:30,goneZ:32, w:0.6, ts:'',      name:'1m',   pane:'gp1m'  },
-];
-
-// Smooth sigmoid-style opacity for a level at fractional zoom
-function levelOpacity(lvl,zoom){
-  if(zoom<lvl.minZ||zoom>=lvl.goneZ)return 0;
-  if(zoom>=lvl.fullZ&&zoom<lvl.fadeZ)return 1;
-  if(zoom<lvl.fullZ){
-    // fade in: minZ → fullZ
-    return Math.max(0,(zoom-lvl.minZ)/(lvl.fullZ-lvl.minZ));
-  }
-  // fade out: fadeZ → goneZ
-  return Math.max(0,1-(zoom-lvl.fadeZ)/(lvl.goneZ-lvl.fadeZ));
-}
-
-// Create or reuse a named Leaflet pane
-function getPane(name,zIndex){
-  if(!map.getPane(name)){
-    map.createPane(name);
-    map.getPane(name).style.zIndex=zIndex;
-    map.getPane(name).classList.add('grid-pane');
-    map.getPane(name).style.pointerEvents='none';
-  }
-  return map.getPane(name);
-}
-GRID_LEVELS.forEach((lvl,i)=>{getPane(lvl.pane,410+i*2);});
-getPane('gpLabels',440);
-
-// ─── UTM GRID ─────────────────────────────────────────────────────────────────
-let utmLayersByPane={},utmOn=false,utmLabelsOn=true;
-
 function drawUTMGrid(){
-  Object.values(utmLayersByPane).forEach(lg=>map.removeLayer(lg));
-  utmLayersByPane={};
+  if(utmGridLayer){map.removeLayer(utmGridLayer);}
+  const bounds=map.getBounds();
+  const color=document.getElementById('utm-color').value;
+  const baseOpacity=parseInt(document.getElementById('utm-opacity').value)/100;
+  const zoom=map.getZoom();
+  
+  utmGridLayer=L.layerGroup();
 
-  const color  =document.getElementById('utm-color').value;
-  const opacity=parseInt(document.getElementById('utm-opacity').value)/100;
-  const zoom   =map.getZoom();
-  const bounds =map.getBounds();
   const south=Math.max(bounds.getSouth(),-80), north=Math.min(bounds.getNorth(),84);
-  const west =Math.max(bounds.getWest(),-180), east =Math.min(bounds.getEast(),180);
+  const west=Math.max(bounds.getWest(),-180), east=Math.min(bounds.getEast(),180);
 
-  const lvl=GRID_LEVELS[0];
-  const op=levelOpacity(lvl,zoom)*opacity;
-  const pane=lvl.pane;
-  map.getPane(pane).style.opacity=op;
-  const lg=L.layerGroup({pane});
-  const opts={color,weight:2.5,opacity:1,interactive:false,pane};
-
-  const lonS=Math.floor(west/6)*6, lonE=Math.ceil(east/6)*6;
-  const latS=Math.floor(south/8)*8, latE=Math.ceil(north/8)*8;
-  for(let lon=lonS;lon<=lonE;lon+=6){
+  const lonStart=Math.floor(west/6)*6, lonEnd=Math.ceil(east/6)*6;
+  for(let lon=lonStart;lon<=lonEnd;lon+=6){
     if(lon<-180||lon>180)continue;
-    L.polyline([[south,lon],[north,lon]],opts).addTo(lg);
+    L.polyline([[Math.max(south,-80),lon],[Math.min(north,84),lon]],{
+      color,weight:2.5,opacity:baseOpacity,interactive:false
+    }).addTo(utmGridLayer);
   }
-  for(let lat=latS;lat<=latE;lat+=8){
+  const latStart=Math.floor(south/8)*8, latEnd=Math.ceil(north/8)*8;
+  for(let lat=latStart;lat<=latEnd;lat+=8){
     if(lat<-80||lat>84)continue;
-    L.polyline([[lat,west],[lat,east]],opts).addTo(lg);
+    L.polyline([[lat,Math.max(west,-180)],[lat,Math.min(east,180)]],{
+      color,weight:2.5,opacity:baseOpacity,interactive:false
+    }).addTo(utmGridLayer);
   }
 
   if(utmLabelsOn){
-    const fs=zoom>=8?20:zoom>=5?16:zoom>=3?13:10;
-    const lblPane='gpLabels';
-    for(let lon=lonS;lon<lonE;lon+=6){
-      const zn=Math.floor((Math.max(lon,-180)+180)/6)+1;
-      if(zn<1||zn>60)continue;
-      for(let lat=latS;lat<latE;lat+=8){
+    const fontSize=11;
+    for(let lon=lonStart;lon<lonEnd;lon+=6){
+      const zoneNum=Math.floor((Math.max(lon,-180)+180)/6)+1;
+      if(zoneNum<1||zoneNum>60)continue;
+      for(let lat=latStart;lat<latEnd;lat+=8){
         const latTop=Math.min(lat+8,84);
         if(latTop<south||lat>north||lon+6<west||lon>east)continue;
-        const band=utmBandLetter(lat+0.1);if(!band)continue;
+        const band=utmBandLetter(lat+0.1);
+        if(!band)continue;
         const latMid=(Math.max(lat,south)+Math.min(latTop,north))/2;
         const lonMid=(Math.max(lon,west)+Math.min(lon+6,east))/2;
-        L.marker([latMid,lonMid],{pane:lblPane,
-          icon:L.divIcon({className:'utm-zone-label',
-            html:`<span style="font-size:${fs}px">${zn}${band}</span>`,
-            iconSize:[0,0],iconAnchor:[0,0]}),
-          interactive:false,zIndexOffset:0}).addTo(lg);
+        L.marker([latMid,lonMid],{
+          icon:L.divIcon({
+            className:'hundredkm-label',
+            html:`<span style="font-size:${fontSize}px">${zoneNum}${band}</span>`,
+            iconSize:[0,0],
+            iconAnchor:[0,0]
+          }),
+          interactive:false,
+          zIndexOffset:100
+        }).addTo(utmGridLayer);
       }
     }
   }
-
-  lg.addTo(map);
-  utmLayersByPane[pane]=lg;
+  utmGridLayer.addTo(map);
 }
-
-function removeUTMGrid(){
-  Object.values(utmLayersByPane).forEach(lg=>map.removeLayer(lg));
-  utmLayersByPane={};
-}
+function removeUTMGrid(){if(utmGridLayer){map.removeLayer(utmGridLayer);utmGridLayer=null;}}
 
 document.getElementById('utm-tog').addEventListener('click',function(){
   utmOn=!utmOn;this.classList.toggle('on',utmOn);
   document.getElementById('utm-options').classList.toggle('show',utmOn);
   utmOn?drawUTMGrid():removeUTMGrid();
-  if(utmOn)map.on('moveend zoomend',drawUTMGrid);
-  else map.off('moveend zoomend',drawUTMGrid);
+  if(utmOn)map.on('moveend zoomend',debouncedDrawUTMGrid);
+  else map.off('moveend zoomend',debouncedDrawUTMGrid);
 });
 document.getElementById('utm-color').addEventListener('change',()=>{if(utmOn)drawUTMGrid();});
-document.getElementById('utm-opacity').addEventListener('input',function(){
-  document.getElementById('utm-opacity-val').textContent=this.value+'%';
-  if(utmOn)drawUTMGrid();
-});
-document.getElementById('utm-labels-tog').addEventListener('click',function(){
-  utmLabelsOn=!utmLabelsOn;this.classList.toggle('on',utmLabelsOn);
-  if(utmOn)drawUTMGrid();
-});
+document.getElementById('utm-opacity').addEventListener('input',function(){document.getElementById('utm-opacity-val').textContent=this.value+'%';if(utmOn)drawUTMGrid();});
+document.getElementById('utm-labels-tog').addEventListener('click',function(){utmLabelsOn=!utmLabelsOn;this.classList.toggle('on',utmLabelsOn);if(utmOn)drawUTMGrid();});
+const debouncedDrawUTMGrid = debounce(drawUTMGrid, 150);
 
-// ─── MGRS GRID — GISsurfer-style ─────────────────────────────────────────────
-let mgrsLayersByPane={},mgrsOn=false;
+// ─── MGRS GRID WITH GISsurfer STYLE ───────────────────────────────────────
+let mgrsGridLayer=null,mgrsOn=false;
+let currentGridLevel = '100km';
 
-function drawMGRSGrid(){
-  Object.values(mgrsLayersByPane).forEach(lg=>map.removeLayer(lg));
-  mgrsLayersByPane={};
-
-  const color  =document.getElementById('mgrs-color').value;
-  const opacity=parseInt(document.getElementById('mgrs-opacity').value)/100;
-  const zoom   =map.getZoom();
-  const bounds =map.getBounds();
-  const south=Math.max(bounds.getSouth(),-80), north=Math.min(bounds.getNorth(),84);
-  const west =Math.max(bounds.getWest(),-180), east =Math.min(bounds.getEast(),180);
-  const lonS=Math.floor(west/6)*6,  lonE=Math.ceil(east/6)*6;
-  const latS=Math.floor(south/8)*8, latE=Math.ceil(north/8)*8;
-
-  // ── 1. DRAW GRID LINES for each level in its own pane ──────────────────────
-  GRID_LEVELS.forEach(lvl=>{
-    const op=levelOpacity(lvl,zoom)*opacity;
-    const pane=lvl.pane;
-    map.getPane(pane).style.opacity=op;
-    if(op<0.02)return;
-
-    const lg=L.layerGroup({pane});
-    const lineOpts={color,weight:lvl.w,opacity:1,interactive:false,pane};
-
-    if(lvl.step===100000){
-      // GZD — straight lat/lon lines (no UTM distortion at this scale)
-      for(let lon=lonS;lon<=lonE;lon+=6){
-        if(lon<-180||lon>180)continue;
-        L.polyline([[south,lon],[north,lon]],lineOpts).addTo(lg);
-      }
-      for(let lat=latS;lat<=latE;lat+=8){
-        if(lat<-80||lat>84)continue;
-        L.polyline([[lat,west],[lat,east]],lineOpts).addTo(lg);
-      }
-    } else {
-      // Sub-levels: UTM-projected curved lines
-      const res=sampleRes(lvl.step);
-      for(let lon=lonS;lon<lonE;lon+=6){
-        const zn=Math.floor((Math.max(lon,-180)+180)/6)+1;
-        if(zn<1||zn>60)continue;
-        for(let lat=latS;lat<latE;lat+=8){
-          const latTop=Math.min(lat+8,84);
-          if(latTop<south||lat>north||lon+6<west||lon>east)continue;
-          const hem=lat>=0?'N':'S';
-          let sw,ne;
-          try{
-            sw=latLonToUTM(Math.max(lat,south)+0.001,Math.max(lon,west)+0.001);
-            ne=latLonToUTM(Math.min(latTop,north)-0.001,Math.min(lon+6,east)-0.001);
-          }catch(_){continue;}
-          const eMin=Math.floor(sw.easting /lvl.step)*lvl.step;
-          const eMax=Math.ceil (ne.easting /lvl.step)*lvl.step;
-          const nMin=Math.floor(sw.northing/lvl.step)*lvl.step;
-          const nMax=Math.ceil (ne.northing/lvl.step)*lvl.step;
-          for(let e=eMin;e<=eMax;e+=lvl.step){
-            if(e<100000||e>900000)continue;
-            const pts=utmLine_E(zn,hem,e,nMin,nMax,res);
-            if(pts.length>1)L.polyline(pts,lineOpts).addTo(lg);
-          }
-          for(let n=nMin;n<=nMax;n+=lvl.step){
-            if(n<0||n>10000000)continue;
-            const pts=utmLine_N(zn,hem,n,eMin,eMax,res);
-            if(pts.length>1)L.polyline(pts,lineOpts).addTo(lg);
-          }
-        }
-      }
-    }
-    lg.addTo(map);
-    mgrsLayersByPane[pane]=lg;
-  });
-
-  // ── 2. LABEL PANE ─────────────────────────────────────────────────────────
-  const lblPane='gpLabels';
-  map.getPane(lblPane).style.opacity=1;
-  const lblLg=L.layerGroup({pane:lblPane});
-
-  // ── 2a. GZD centre labels (zone number + band letter, e.g. "37M") ──────────
-  // Visible while GZD level is visible (z0–~10)
-  {
-    const gzdOp=Math.min(levelOpacity(GRID_LEVELS[0],zoom)*1.2,1);
-    if(gzdOp>0.04){
-      // Font scale: large when it's the only visible label, smaller as sub-grid appears
-      const fs=zoom>=9?18:zoom>=6?15:zoom>=4?13:11;
-      for(let lon=lonS;lon<lonE;lon+=6){
-        const zn=Math.floor((Math.max(lon,-180)+180)/6)+1;
-        if(zn<1||zn>60)continue;
-        for(let lat=latS;lat<latE;lat+=8){
-          const latTop=Math.min(lat+8,84);
-          if(latTop<south||lat>north||lon+6<west||lon>east)continue;
-          const band=utmBandLetter(lat+0.1);if(!band)continue;
-          const latMid=(Math.max(lat,south)+Math.min(latTop,north))/2;
-          const lonMid=(Math.max(lon,west)+Math.min(lon+6,east))/2;
-          L.marker([latMid,lonMid],{pane:lblPane,
-            icon:L.divIcon({className:'gzd-label',
-              html:`<span style="font-size:${fs}px;opacity:${gzdOp.toFixed(2)}">${zn}${band}</span>`,
-              iconSize:[0,0],iconAnchor:[0,0]}),
-            interactive:false,zIndexOffset:10}).addTo(lblLg);
-        }
-      }
-    }
-  }
-
-  // ── 2b. 100k square IDs (e.g. "BV", "DU") ─────────────────────────────────
-  // Appear when 10km level is visible (z5–14), centered in each 100km square
-  // Exactly as in GISsurfer: large 2-letter IDs filling the square
-  {
-    const sq100Op=levelOpacity(GRID_LEVELS[1],zoom);
-    if(sq100Op>0.04&&zoom<=16){
-      const fs=zoom>=13?16:zoom>=10?18:zoom>=7?20:zoom>=5?16:12;
-      for(let lon=lonS;lon<lonE;lon+=6){
-        const zn=Math.floor((Math.max(lon,-180)+180)/6)+1;
-        if(zn<1||zn>60)continue;
-        for(let lat=latS;lat<latE;lat+=8){
-          const latTop=Math.min(lat+8,84);
-          if(latTop<south||lat>north||lon+6<west||lon>east)continue;
-          const hem=lat>=0?'N':'S';
-          let sw;
-          try{sw=latLonToUTM(Math.max(lat,south)+0.001,Math.max(lon,west)+0.001);}catch(_){continue;}
-          let ne;
-          try{ne=latLonToUTM(Math.min(latTop,north)-0.001,Math.min(lon+6,east)-0.001);}catch(_){continue;}
-          const nMin=Math.floor(sw.northing/100000)*100000;
-          const nMax=Math.ceil (ne.northing/100000)*100000;
-          for(let e=100000;e<900000;e+=100000){
-            for(let n=nMin;n<nMax;n+=100000){
-              try{
-                const ll=utmToLatLon(zn,hem,e+50000,n+50000);
-                if(ll.lat<south||ll.lat>north||ll.lon<west||ll.lon>east)continue;
-                const {colIdx,rowIdx}=utm100kIndices(zn,e,n);
-                const sqId=get100kColLetter(zn,colIdx)+get100kRowLetter(zn,rowIdx);
-                L.marker([ll.lat,ll.lon],{pane:lblPane,
-                  icon:L.divIcon({className:'sq100k-label',
-                    html:`<span style="font-size:${fs}px;opacity:${sq100Op.toFixed(2)}">${sqId}</span>`,
-                    iconSize:[0,0],iconAnchor:[0,0]}),
-                  interactive:false,zIndexOffset:20}).addTo(lblLg);
-              }catch(_){}
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // ── 2c. AXIS TICK LABELS ───────────────────────────────────────────────────
-  // GISsurfer style: small numbers pinned to LEFT edge (northing/Y) and
-  // BOTTOM edge (easting/X), showing only the significant digits.
-  // Only the two finest VISIBLE levels draw ticks simultaneously during crossfade.
-  {
-    // Collect all levels currently contributing opacity > 2%
-    const visLevels=GRID_LEVELS.filter(l=>l.step<100000&&levelOpacity(l,zoom)>0.02);
-
-    // Format: strip trailing zeros according to level, e.g. 500000 → "50" at 10km level
-    function fmtTick(v,ts){
-      // v is UTM metres. Show only the digits that change at this precision.
-      // e.g. step=10000: show 2 sig figs → 460000 → "46"
-      return String(v).padStart(7,'0').slice(0,7-ts.length);
-    }
-
-    visLevels.forEach(tickLvl=>{
-      const tickOp=levelOpacity(tickLvl,zoom);
-      const fs=zoom>=16?10:zoom>=13?10:zoom>=10?11:11;
-      const placedE=new Set(),placedN=new Set();
-
-      for(let lon=lonS;lon<lonE;lon+=6){
-        const zn=Math.floor((Math.max(lon,-180)+180)/6)+1;
-        if(zn<1||zn>60)continue;
-        for(let lat=latS;lat<latE;lat+=8){
-          const latTop=Math.min(lat+8,84);
-          if(latTop<south||lat>north||lon+6<west||lon>east)continue;
-          const hem=lat>=0?'N':'S';
-          let sw,ne;
-          try{
-            sw=latLonToUTM(Math.max(lat,south)+0.001,Math.max(lon,west)+0.001);
-            ne=latLonToUTM(Math.min(latTop,north)-0.001,Math.min(lon+6,east)-0.001);
-          }catch(_){continue;}
-
-          const eMin=Math.floor(sw.easting /tickLvl.step)*tickLvl.step;
-          const eMax=Math.ceil (ne.easting /tickLvl.step)*tickLvl.step;
-          const nMin=Math.floor(sw.northing/tickLvl.step)*tickLvl.step;
-          const nMax=Math.ceil (ne.northing/tickLvl.step)*tickLvl.step;
-
-          // ── Easting ticks along BOTTOM edge of viewport ────────────────
-          for(let e=eMin;e<=eMax;e+=tickLvl.step){
-            if(e<100000||e>900000)continue;
-            const key=`${tickLvl.step}_e${e}`;
-            if(placedE.has(key))continue;
-            try{
-              // find lat/lon where this easting line crosses the bottom of view
-              const ll=utmToLatLon(zn,hem,e,sw.northing);
-              if(ll.lon<west-0.02||ll.lon>east+0.02)continue;
-              const lbl=fmtTick(e,tickLvl.ts);
-              // Pin to absolute bottom — rotated 90° reading upward
-              L.marker([south,ll.lon],{pane:lblPane,
-                icon:L.divIcon({className:'',
-                  html:`<div class="tick-e-lbl" style="font-size:${fs}px;opacity:${tickOp.toFixed(2)};`+
-                       `transform:rotate(-90deg) translateY(-100%);transform-origin:left top;position:absolute;`+
-                       `white-space:nowrap;">${lbl}</div>`,
-                  iconSize:[0,0],iconAnchor:[0,0]}),
-                interactive:false,zIndexOffset:900}).addTo(lblLg);
-              placedE.add(key);
-            }catch(_){}
-          }
-
-          // ── Northing ticks along LEFT edge of viewport ─────────────────
-          for(let n=nMin;n<=nMax;n+=tickLvl.step){
-            if(n<0||n>10000000)continue;
-            const key=`${tickLvl.step}_n${n}`;
-            if(placedN.has(key))continue;
-            try{
-              const ll=utmToLatLon(zn,hem,sw.easting,n);
-              if(ll.lat<south-0.02||ll.lat>north+0.02)continue;
-              const lbl=fmtTick(n,tickLvl.ts);
-              L.marker([ll.lat,west],{pane:lblPane,
-                icon:L.divIcon({className:'',
-                  html:`<div class="tick-n-lbl" style="font-size:${fs}px;opacity:${tickOp.toFixed(2)};`+
-                       `white-space:nowrap;">${lbl}</div>`,
-                  iconSize:[0,0],iconAnchor:[0,6]}),
-                interactive:false,zIndexOffset:900}).addTo(lblLg);
-              placedN.add(key);
-            }catch(_){}
-          }
-        }
-      }
-    });
-  }
-
-  lblLg.addTo(map);
-  mgrsLayersByPane['gpLabels']=lblLg;
-
-  // Update sidebar badge
-  const lvlName=zoom>=19?'1m':zoom>=16?'10m':zoom>=13?'100m':zoom>=9?'1km':zoom>=5?'10km':'GZD';
-  const el=document.getElementById('mgrs-zoom-level');
-  if(el)el.textContent=`z${Math.round(zoom)} · ${lvlName}`;
+function updateGridLevelIndicator(level) {
+  currentGridLevel = level;
+  const indicator = document.getElementById('grid-level-indicator');
+  indicator.textContent = level + ' Grid';
 }
 
-function removeMGRSGrid(){
-  Object.values(mgrsLayersByPane).forEach(lg=>map.removeLayer(lg));
-  mgrsLayersByPane={};
+function drawMGRSGrid() {
+  if (mgrsGridLayer) { map.removeLayer(mgrsGridLayer); }
+  const bounds = map.getBounds();
+  const zoom = map.getZoom();
+  const color = document.getElementById('mgrs-color').value;
+  const baseOpacity = parseInt(document.getElementById('mgrs-opacity').value) / 100;
+  const precisionMode = document.getElementById('mgrs-precision').value;
+  
+  mgrsGridLayer = L.layerGroup();
+
+  const south = Math.max(bounds.getSouth(), -80);
+  const north = Math.min(bounds.getNorth(), 84);
+  const west = Math.max(bounds.getWest(), -180);
+  const east = Math.min(bounds.getEast(), 180);
+
+  // Determine active grid level based on zoom
+  let gridLevel, majorSpacing, minorSpacing;
+  if (zoom <= 6.5) {
+    gridLevel = '100km';
+    majorSpacing = 100000;
+    minorSpacing = null;
+  } else if (zoom <= 8.5) {
+    gridLevel = '10km';
+    majorSpacing = 10000;
+    minorSpacing = null;
+  } else if (zoom <= 10.5) {
+    gridLevel = '1km';
+    majorSpacing = 1000;
+    minorSpacing = null;
+  } else if (zoom <= 12.5) {
+    gridLevel = '100m';
+    majorSpacing = 100;
+    minorSpacing = null;
+  } else if (zoom <= 14.5) {
+    gridLevel = '10m';
+    majorSpacing = 10;
+    minorSpacing = null;
+  } else {
+    gridLevel = '1m';
+    majorSpacing = 1;
+    minorSpacing = null;
+  }
+  
+  if (precisionMode !== 'auto') {
+    majorSpacing = parseInt(precisionMode);
+    minorSpacing = null;
+  }
+
+  updateGridLevelIndicator(gridLevel);
+
+  const zones = new Set();
+  const center = map.getCenter();
+  const centerUTM = latLonToUTM(center.lat, center.lng);
+  zones.add(centerUTM.zone);
+  
+  [[south, west], [south, east], [north, west], [north, east]].forEach(c => {
+    zones.add(latLonToUTM(c[0], c[1]).zone);
+  });
+
+  zones.forEach(zone => {
+    const hem = center.lat >= 0 ? 'N' : 'S';
+    let minE = Infinity, maxE = -Infinity, minN = Infinity, maxN = -Infinity;
+
+    const samples = 10;
+    for (let i = 0; i <= samples; i++) {
+      const lat = south + (north - south) * (i / samples);
+      const lon1 = west + (east - west) * (i / samples);
+      const lon2 = east - (east - west) * (i / samples);
+      
+      const utm1 = latLonToUTM(lat, lon1);
+      const utm2 = latLonToUTM(lat, lon2);
+      
+      if (utm1.zone === zone) {
+        minE = Math.min(minE, utm1.easting); maxE = Math.max(maxE, utm1.easting);
+        minN = Math.min(minN, utm1.northing); maxN = Math.max(maxN, utm1.northing);
+      }
+      if (utm2.zone === zone) {
+        minE = Math.min(minE, utm2.easting); maxE = Math.max(maxE, utm2.easting);
+        minN = Math.min(minN, utm2.northing); maxN = Math.max(maxN, utm2.northing);
+      }
+    }
+
+    if (minE === Infinity) return;
+
+    minE = Math.floor(minE / majorSpacing) * majorSpacing - majorSpacing;
+    maxE = Math.ceil(maxE / majorSpacing) * majorSpacing + majorSpacing;
+    minN = Math.floor(minN / majorSpacing) * majorSpacing - majorSpacing;
+    maxN = Math.ceil(maxN / majorSpacing) * majorSpacing + majorSpacing;
+
+    const drawLine = (isEasting, val, is100km) => {
+      const pts = [];
+      const steps = 20;
+      const start = isEasting ? minN : minE;
+      const end = isEasting ? maxN : maxE;
+      
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const currentVal = start + (end - start) * t;
+        const e = isEasting ? val : currentVal;
+        const n = isEasting ? currentVal : val;
+        try {
+          const ll = utmToLatLon(zone, hem, e, n);
+          if (ll.lat >= -85 && ll.lat <= 85) pts.push([ll.lat, ll.lon]);
+        } catch (err) {}
+      }
+      
+      if (pts.length > 1) {
+        let lineWeight, lineOpacity, lineColor;
+        
+        if (is100km) {
+          // 100km boundaries - thick green
+          lineColor = '#00ff00';
+          lineWeight = 2.5;
+          lineOpacity = 0.9;
+        } else if (gridLevel === '100km' || gridLevel === '10km') {
+          // Coarser levels - thick green
+          lineColor = '#00ff00';
+          lineWeight = 2.0;
+          lineOpacity = baseOpacity;
+        } else {
+          // Finer levels - thin dark/black
+          lineColor = '#1a1a1a';
+          lineWeight = 1.0;
+          lineOpacity = baseOpacity;
+        }
+        
+        L.polyline(pts, { 
+          color: lineColor, 
+          weight: lineWeight, 
+          opacity: lineOpacity, 
+          interactive: false
+        }).addTo(mgrsGridLayer);
+      }
+    };
+
+    // Draw grid lines
+    for (let e = minE; e <= maxE; e += majorSpacing) {
+      const is100km = (e % 100000 === 0);
+      drawLine(true, e, is100km);
+    }
+    for (let n = minN; n <= maxN; n += majorSpacing) {
+      const is100km = (n % 100000 === 0);
+      drawLine(false, n, is100km);
+    }
+  });
+
+  // Add labels based on grid level
+  if (gridLevel === '100km') {
+    add100kmLabels(mgrsGridLayer, bounds, centerUTM.zone, center.lat >= 0 ? 'N' : 'S', zoom);
+  } else if (gridLevel === '10km') {
+    add10kmLabels(mgrsGridLayer, bounds, centerUTM.zone, center.lat >= 0 ? 'N' : 'S', majorSpacing);
+    add100kmLabelsPersistent(mgrsGridLayer, bounds, centerUTM.zone, center.lat >= 0 ? 'N' : 'S', zoom);
+  } else if (gridLevel === '1km') {
+    add1kmLabels(mgrsGridLayer, bounds, centerUTM.zone, center.lat >= 0 ? 'N' : 'S', majorSpacing);
+    add100kmLabelsPersistent(mgrsGridLayer, bounds, centerUTM.zone, center.lat >= 0 ? 'N' : 'S', zoom);
+  }
+  
+  mgrsGridLayer.addTo(map);
+}
+
+function add100kmLabels(layer, bounds, zone, hem, zoom) {
+  if (zoom < 4 || zoom > 7) return;
+  
+  const south = Math.max(bounds.getSouth(), -80), north = Math.min(bounds.getNorth(), 84);
+  const west = Math.max(bounds.getWest(), -180), east = Math.min(bounds.getEast(), 180);
+
+  let minE = Infinity, maxE = -Infinity, minN = Infinity, maxN = -Infinity;
+  const samples = 10;
+  for (let i = 0; i <= samples; i++) {
+    const lat = south + (north - south) * (i / samples);
+    const lon1 = west + (east - west) * (i / samples);
+    const lon2 = east - (east - west) * (i / samples);
+    const utm1 = latLonToUTM(lat, lon1), utm2 = latLonToUTM(lat, lon2);
+    if (utm1.zone === zone) {
+      minE = Math.min(minE, utm1.easting); maxE = Math.max(maxE, utm1.easting);
+      minN = Math.min(minN, utm1.northing); maxN = Math.max(maxN, utm1.northing);
+    }
+    if (utm2.zone === zone) {
+      minE = Math.min(minE, utm2.easting); maxE = Math.max(maxE, utm2.easting);
+      minN = Math.min(minN, utm2.northing); maxN = Math.max(maxN, utm2.northing);
+    }
+  }
+  if (minE === Infinity) return;
+
+  const hundredKmSpacing = 100000;
+  minE = Math.floor(minE / hundredKmSpacing) * hundredKmSpacing;
+  maxE = Math.ceil(maxE / hundredKmSpacing) * hundredKmSpacing;
+  minN = Math.floor(minN / hundredKmSpacing) * hundredKmSpacing;
+  maxN = Math.ceil(maxN / hundredKmSpacing) * hundredKmSpacing;
+
+  const colLetters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const rowLetters = 'ABCDEFGHJKLMNPQRSTUV';
+  const setPat = ((zone - 1) % 3) + 1;
+  const colStart = [0, 8, 16][setPat - 1];
+
+  for (let e = minE; e < maxE; e += hundredKmSpacing) {
+    for (let n = minN; n < maxN; n += hundredKmSpacing) {
+      const eCtr = e + 50000, nCtr = n + 50000;
+      try {
+        const ll = utmToLatLon(zone, hem, eCtr, nCtr);
+        if (ll.lat < south || ll.lat > north || ll.lon < west || ll.lon > east) continue;
+        
+        const colOffset = Math.floor((e - 100000) / 100000) + 4;
+        const colIdx = (colStart + colOffset) % 24;
+        const colLetter = colLetters[colIdx];
+        
+        const rowOffset = Math.floor(n / 100000) % 20;
+        const rowLetter = rowLetters[rowOffset];
+        
+        L.marker([ll.lat, ll.lon], {
+          icon: L.divIcon({
+            className: 'hundredkm-label',
+            html: `${colLetter}${rowLetter}`,
+            iconSize: [0, 0],
+            iconAnchor: [0, 0]
+          }),
+          interactive: false,
+          zIndexOffset: 200
+        }).addTo(layer);
+      } catch(_) {}
+    }
+  }
+}
+
+function add100kmLabelsPersistent(layer, bounds, zone, hem, zoom) {
+  // Always show 100km labels on the left side when zoomed in
+  if (zoom < 7) return;
+  
+  const south = Math.max(bounds.getSouth(), -80), north = Math.min(bounds.getNorth(), 84);
+  const west = Math.max(bounds.getWest(), -180), east = Math.min(bounds.getEast(), 180);
+
+  let minE = Infinity, maxE = -Infinity, minN = Infinity, maxN = -Infinity;
+  const samples = 10;
+  for (let i = 0; i <= samples; i++) {
+    const lat = south + (north - south) * (i / samples);
+    const lon1 = west + (east - west) * (i / samples);
+    const lon2 = east - (east - west) * (i / samples);
+    const utm1 = latLonToUTM(lat, lon1), utm2 = latLonToUTM(lat, lon2);
+    if (utm1.zone === zone) {
+      minE = Math.min(minE, utm1.easting); maxE = Math.max(maxE, utm1.easting);
+      minN = Math.min(minN, utm1.northing); maxN = Math.max(maxN, utm1.northing);
+    }
+    if (utm2.zone === zone) {
+      minE = Math.min(minE, utm2.easting); maxE = Math.max(maxE, utm2.easting);
+      minN = Math.min(minN, utm2.northing); maxN = Math.max(maxN, utm2.northing);
+    }
+  }
+  if (minE === Infinity) return;
+
+  const hundredKmSpacing = 100000;
+  minE = Math.floor(minE / hundredKmSpacing) * hundredKmSpacing;
+  maxE = Math.ceil(maxE / hundredKmSpacing) * hundredKmSpacing;
+  minN = Math.floor(minN / hundredKmSpacing) * hundredKmSpacing;
+  maxN = Math.ceil(maxN / hundredKmSpacing) * hundredKmSpacing;
+
+  const colLetters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const rowLetters = 'ABCDEFGHJKLMNPQRSTUV';
+  const setPat = ((zone - 1) % 3) + 1;
+  const colStart = [0, 8, 16][setPat - 1];
+
+  // Only show labels on the left side (first column)
+  const e = minE;
+  for (let n = minN; n < maxN; n += hundredKmSpacing) {
+    const eCtr = e + 50000, nCtr = n + 50000;
+    try {
+      const ll = utmToLatLon(zone, hem, eCtr, nCtr);
+      if (ll.lat < south || ll.lat > north || ll.lon < west || ll.lon > east) continue;
+      
+      const colOffset = Math.floor((e - 100000) / 100000) + 4;
+      const colIdx = (colStart + colOffset) % 24;
+      const colLetter = colLetters[colIdx];
+      
+      const rowOffset = Math.floor(n / 100000) % 20;
+      const rowLetter = rowLetters[rowOffset];
+      
+      const px = map.latLngToContainerPoint([ll.lat, ll.lon]);
+      if (px.x < map.getSize().x * 0.3) { // Only on left 30% of screen
+        L.marker([ll.lat, ll.lon], {
+          icon: L.divIcon({
+            className: 'hundredkm-label',
+            html: `${colLetter}${rowLetter}`,
+            iconSize: [0, 0],
+            iconAnchor: [-30, 0]
+          }),
+          interactive: false,
+          zIndexOffset: 200
+        }).addTo(layer);
+      }
+    } catch(_) {}
+  }
+}
+
+function add10kmLabels(layer, bounds, zone, hem, spacing) {
+  const south = Math.max(bounds.getSouth(), -80), north = Math.min(bounds.getNorth(), 84);
+  const west = Math.max(bounds.getWest(), -180), east = Math.min(bounds.getEast(), 180);
+
+  let minE = Infinity, maxE = -Infinity, minN = Infinity, maxN = -Infinity;
+  const samples = 10;
+  for (let i = 0; i <= samples; i++) {
+    const lat = south + (north - south) * (i / samples);
+    const lon1 = west + (east - west) * (i / samples);
+    const lon2 = east - (east - west) * (i / samples);
+    const utm1 = latLonToUTM(lat, lon1), utm2 = latLonToUTM(lat, lon2);
+    if (utm1.zone === zone) {
+      minE = Math.min(minE, utm1.easting); maxE = Math.max(maxE, utm1.easting);
+      minN = Math.min(minN, utm1.northing); maxN = Math.max(maxN, utm1.northing);
+    }
+    if (utm2.zone === zone) {
+      minE = Math.min(minE, utm2.easting); maxE = Math.max(maxE, utm2.easting);
+      minN = Math.min(minN, utm2.northing); maxN = Math.max(maxN, utm2.northing);
+    }
+  }
+  if (minE === Infinity) return;
+
+  minE = Math.floor(minE / spacing) * spacing;
+  maxE = Math.ceil(maxE / spacing) * spacing;
+  minN = Math.floor(minN / spacing) * spacing;
+  maxN = Math.ceil(maxN / spacing) * spacing;
+
+  // Format: single digit (last digit of 10km)
+  const formatCoord = (val) => String(Math.floor((val % 100000) / 10000));
+
+  // Easting (bottom) - cyan
+  for (let e = minE; e <= maxE; e += spacing) {
+    let bestPt = null, bestDist = Infinity;
+    for (let i = 0; i <= 20; i++) {
+      const n = minN + (maxN - minN) * (i / 20);
+      try {
+        const ll = utmToLatLon(zone, hem, e, n);
+        const dist = Math.abs(ll.lat - south);
+        if (dist < bestDist && ll.lat >= south - 0.5) { bestDist = dist; bestPt = ll; }
+      } catch(_) {}
+    }
+    if (bestPt && bestDist < 1) {
+      const label = formatCoord(e);
+      const px = map.latLngToContainerPoint(bestPt);
+      if (px.y > 0 && px.y < map.getSize().y && px.x > 0 && px.x < map.getSize().x) {
+        L.marker([bestPt.lat, bestPt.lng], {
+          icon: L.divIcon({
+            className: 'tick-label-east',
+            html: label,
+            iconSize: [0, 0],
+            iconAnchor: [0, 20]
+          }),
+          interactive: false,
+          zIndexOffset: 1000
+        }).addTo(layer);
+      }
+    }
+  }
+
+  // Northing (left) - yellow/amber
+  for (let n = minN; n <= maxN; n += spacing) {
+    let bestPt = null, bestDist = Infinity;
+    for (let i = 0; i <= 20; i++) {
+      const e = minE + (maxE - minE) * (i / 20);
+      try {
+        const ll = utmToLatLon(zone, hem, e, n);
+        const dist = Math.abs(ll.lng - west);
+        if (dist < bestDist && ll.lng >= west - 0.5) { bestDist = dist; bestPt = ll; }
+      } catch(_) {}
+    }
+    if (bestPt && bestDist < 1) {
+      const label = formatCoord(n);
+      const px = map.latLngToContainerPoint(bestPt);
+      if (px.y > 0 && px.y < map.getSize().y && px.x > 0 && px.x < map.getSize().x) {
+        L.marker([bestPt.lat, bestPt.lng], {
+          icon: L.divIcon({
+            className: 'tick-label-north',
+            html: label,
+            iconSize: [0, 0],
+            iconAnchor: [-25, 0]
+          }),
+          interactive: false,
+          zIndexOffset: 1000
+        }).addTo(layer);
+      }
+    }
+  }
+}
+
+function add1kmLabels(layer, bounds, zone, hem, spacing) {
+  const south = Math.max(bounds.getSouth(), -80), north = Math.min(bounds.getNorth(), 84);
+  const west = Math.max(bounds.getWest(), -180), east = Math.min(bounds.getEast(), 180);
+
+  let minE = Infinity, maxE = -Infinity, minN = Infinity, maxN = -Infinity;
+  const samples = 10;
+  for (let i = 0; i <= samples; i++) {
+    const lat = south + (north - south) * (i / samples);
+    const lon1 = west + (east - west) * (i / samples);
+    const lon2 = east - (east - west) * (i / samples);
+    const utm1 = latLonToUTM(lat, lon1), utm2 = latLonToUTM(lat, lon2);
+    if (utm1.zone === zone) {
+      minE = Math.min(minE, utm1.easting); maxE = Math.max(maxE, utm1.easting);
+      minN = Math.min(minN, utm1.northing); maxN = Math.max(maxN, utm1.northing);
+    }
+    if (utm2.zone === zone) {
+      minE = Math.min(minE, utm2.easting); maxE = Math.max(maxE, utm2.easting);
+      minN = Math.min(minN, utm2.northing); maxN = Math.max(maxN, utm2.northing);
+    }
+  }
+  if (minE === Infinity) return;
+
+  minE = Math.floor(minE / spacing) * spacing;
+  maxE = Math.ceil(maxE / spacing) * spacing;
+  minN = Math.floor(minN / spacing) * spacing;
+  maxN = Math.ceil(maxN / spacing) * spacing;
+
+  // Format: 2 digits (last 2 digits of km)
+  const formatCoord = (val) => String(Math.floor((val % 100000) / 1000)).padStart(2, '0');
+
+  // Easting (bottom) - cyan
+  for (let e = minE; e <= maxE; e += spacing) {
+    let bestPt = null, bestDist = Infinity;
+    for (let i = 0; i <= 20; i++) {
+      const n = minN + (maxN - minN) * (i / 20);
+      try {
+        const ll = utmToLatLon(zone, hem, e, n);
+        const dist = Math.abs(ll.lat - south);
+        if (dist < bestDist && ll.lat >= south - 0.5) { bestDist = dist; bestPt = ll; }
+      } catch(_) {}
+    }
+    if (bestPt && bestDist < 1) {
+      const label = formatCoord(e);
+      const px = map.latLngToContainerPoint(bestPt);
+      if (px.y > 0 && px.y < map.getSize().y && px.x > 0 && px.x < map.getSize().x) {
+        L.marker([bestPt.lat, bestPt.lng], {
+          icon: L.divIcon({
+            className: 'tick-label-east',
+            html: label,
+            iconSize: [0, 0],
+            iconAnchor: [0, 20]
+          }),
+          interactive: false,
+          zIndexOffset: 1000
+        }).addTo(layer);
+      }
+    }
+  }
+
+  // Northing (left) - yellow/amber
+  for (let n = minN; n <= maxN; n += spacing) {
+    let bestPt = null, bestDist = Infinity;
+    for (let i = 0; i <= 20; i++) {
+      const e = minE + (maxE - minE) * (i / 20);
+      try {
+        const ll = utmToLatLon(zone, hem, e, n);
+        const dist = Math.abs(ll.lng - west);
+        if (dist < bestDist && ll.lng >= west - 0.5) { bestDist = dist; bestPt = ll; }
+      } catch(_) {}
+    }
+    if (bestPt && bestDist < 1) {
+      const label = formatCoord(n);
+      const px = map.latLngToContainerPoint(bestPt);
+      if (px.y > 0 && px.y < map.getSize().y && px.x > 0 && px.x < map.getSize().x) {
+        L.marker([bestPt.lat, bestPt.lng], {
+          icon: L.divIcon({
+            className: 'tick-label-north',
+            html: label,
+            iconSize: [0, 0],
+            iconAnchor: [-25, 0]
+          }),
+          interactive: false,
+          zIndexOffset: 1000
+        }).addTo(layer);
+      }
+    }
+  }
 }
 
 document.getElementById('mgrs-tog').addEventListener('click',function(){
   mgrsOn=!mgrsOn;this.classList.toggle('on',mgrsOn);
   document.getElementById('mgrs-options').classList.toggle('show',mgrsOn);
-  if(mgrsOn){drawMGRSGrid();map.on('moveend zoomend',drawMGRSGrid);}
-  else{removeMGRSGrid();map.off('moveend zoomend',drawMGRSGrid);}
+  if(mgrsOn){drawMGRSGrid();map.on('moveend zoomend',debouncedDrawMGRSGrid);}
+  else{if(mgrsGridLayer){map.removeLayer(mgrsGridLayer);mgrsGridLayer=null;}map.off('moveend zoomend',debouncedDrawMGRSGrid);}
 });
-['mgrs-color','mgrs-opacity'].forEach(id=>{
+const debouncedDrawMGRSGrid = debounce(drawMGRSGrid, 150);
+
+['mgrs-color','mgrs-opacity','mgrs-precision'].forEach(id=>{
   const el=document.getElementById(id);
   el.addEventListener('change',()=>{if(mgrsOn)drawMGRSGrid();});
-  el.addEventListener('input',function(){
-    if(id==='mgrs-opacity')document.getElementById('mgrs-opacity-val').textContent=this.value+'%';
-    if(mgrsOn)drawMGRSGrid();
-  });
+  el.addEventListener('input',function(){if(id==='mgrs-opacity')document.getElementById('mgrs-opacity-val').textContent=this.value+'%';if(mgrsOn)drawMGRSGrid();});
 });
 
-// ─── ZOOM ANIMATION — drive pane opacity live on every zoom frame ─────────────
-map.on('zoom',function(){
-  const z=map.getZoom();
-  if(mgrsOn){
-    const base=parseInt(document.getElementById('mgrs-opacity').value)/100;
-    GRID_LEVELS.forEach(lvl=>{
-      const pane=map.getPane(lvl.pane);
-      if(pane)pane.style.opacity=levelOpacity(lvl,z)*base;
-    });
-  }
-  if(utmOn){
-    const base=parseInt(document.getElementById('utm-opacity').value)/100;
-    const pane=map.getPane('gp100k');
-    if(pane)pane.style.opacity=levelOpacity(GRID_LEVELS[0],z)*base;
-  }
-});
-
-
+// ─── GRATICULE ────────────────────────────────────────────────────────────
 let gratLayer=null,gratOn=false;
 function drawGraticule(){
   if(gratLayer)map.removeLayer(gratLayer);
   gratLayer=L.layerGroup();
-  const bounds=map.getBounds();
-  const zoom=map.getZoom();
+  const bounds=map.getBounds(), zoom=map.getZoom();
   const step=zoom<4?30:zoom<6?15:zoom<8?5:zoom<10?1:0.5;
-  const color='rgba(100,150,255,0.4)';
-
-  for(let lon=Math.floor(bounds.getWest()/step)*step;lon<=bounds.getEast();lon+=step){
-    L.polyline([[-90,lon],[90,lon]],{color,weight:0.5,interactive:false}).addTo(gratLayer);
-    if(zoom>5)L.marker([bounds.getSouth()+0.1,lon],{icon:L.divIcon({className:'gzd-label',html:`<span style="font-size:10px">${lon>0?'+':''}${lon}°</span>`,iconSize:[0,0],iconAnchor:[0,0]}),interactive:false}).addTo(gratLayer);
-  }
-  for(let lat=Math.floor(bounds.getSouth()/step)*step;lat<=bounds.getNorth();lat+=step){
-    L.polyline([[lat,-180],[lat,180]],{color,weight:0.5,interactive:false}).addTo(gratLayer);
-    if(zoom>5)L.marker([lat,bounds.getWest()+0.1],{icon:L.divIcon({className:'gzd-label',html:`<span style="font-size:10px">${lat>0?'+':''}${lat}°</span>`,iconSize:[0,0],iconAnchor:[0,0]}),interactive:false}).addTo(gratLayer);
-  }
+  const color='rgba(100,150,255,0.6)';
+  for(let lon=Math.floor(bounds.getWest()/step)*step;lon<=bounds.getEast();lon+=step)
+    L.polyline([[-90,lon],[90,lon]],{color,weight:1.5,interactive:false}).addTo(gratLayer);
+  for(let lat=Math.floor(bounds.getSouth()/step)*step;lat<=bounds.getNorth();lat+=step)
+    L.polyline([[lat,-180],[lat,180]],{color,weight:1.5,interactive:false}).addTo(gratLayer);
   gratLayer.addTo(map);
 }
-
 document.getElementById('grat-tog').addEventListener('click',function(){
   gratOn=!gratOn;this.classList.toggle('on',gratOn);
-  if(gratOn){drawGraticule();map.on('moveend zoomend',drawGraticule);}
-  else{if(gratLayer){map.removeLayer(gratLayer);gratLayer=null;}map.off('moveend zoomend',drawGraticule);}
+  if(gratOn){drawGraticule();map.on('moveend zoomend',debouncedDrawGraticule);}
+  else{if(gratLayer){map.removeLayer(gratLayer);gratLayer=null;}map.off('moveend zoomend',debouncedDrawGraticule);}
 });
+const debouncedDrawGraticule = debounce(drawGraticule, 150);
 
-// ─── CURSOR COORDS ────────────────────────────────────────────────────────
+// ─── CURSOR COORDS & INFO ─────────────────────────────────────────────────
 map.on('mousemove',e=>{
   const utm=latLonToUTM(e.latlng.lat,e.latlng.lng);
-  document.getElementById('cursor-coords').textContent=
-    `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)} | ${utm.zone}${utm.letter} ${utm.easting}E ${utm.northing}N`;
+  document.getElementById('cursor-coords').textContent=`${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)} | ${utm.zone}${utm.letter} ${utm.easting}E ${utm.northing}N`;
 });
 
-// ─── CENTER INFO ──────────────────────────────────────────────────────────
 function updateInfoPanel(lat,lon){
   if(!lat&&!lon){const c=map.getCenter();lat=c.lat;lon=c.lng;}
-  const utm=latLonToUTM(lat,lon);
-  const mgrs=latLonToMGRS(lat,lon);
-  const zoom=map.getZoom();
-  const scale=Math.round(559082264/(Math.pow(2,zoom)));
+  const utm=latLonToUTM(lat,lon), mgrs=latLonToMGRS(lat,lon), zoom=map.getZoom();
   document.getElementById('info-lat').textContent=lat.toFixed(6);
   document.getElementById('info-lon').textContent=lon.toFixed(6);
   document.getElementById('info-utm').textContent=`${utm.zone}${utm.letter}`;
@@ -1382,99 +1459,77 @@ function updateInfoPanel(lat,lon){
   document.getElementById('info-northing').textContent=utm.northing.toLocaleString()+' m';
   document.getElementById('info-mgrs').textContent=mgrs;
   document.getElementById('info-zoom').textContent=zoom;
-  document.getElementById('info-scale').textContent=`1:${scale.toLocaleString()}`;
+  document.getElementById('info-scale').textContent=`1:${Math.round(559082264/(Math.pow(2,zoom))).toLocaleString()}`;
 }
-
 map.on('moveend zoomend',()=>updateInfoPanel());
-updateInfoPanel(20,20);
+updateInfoPanel(0.5,37);
 
 document.getElementById('copy-coords').addEventListener('click',()=>{
-  const lat=document.getElementById('info-lat').textContent;
-  const lon=document.getElementById('info-lon').textContent;
-  const utm=document.getElementById('info-utm').textContent+' '+document.getElementById('info-easting').textContent+' '+document.getElementById('info-northing').textContent;
-  const mgrs=document.getElementById('info-mgrs').textContent;
-  navigator.clipboard.writeText(`GPS: ${lat}, ${lon}\nUTM: ${utm}\nMGRS: ${mgrs}`).then(()=>notify('Coordinates copied!'));
+  const txt=`GPS: ${document.getElementById('info-lat').textContent}, ${document.getElementById('info-lon').textContent}\nUTM: ${document.getElementById('info-utm').textContent} ${document.getElementById('info-easting').textContent} ${document.getElementById('info-northing').textContent}\nMGRS: ${document.getElementById('info-mgrs').textContent}`;
+  navigator.clipboard.writeText(txt).then(()=>notify('Coordinates copied!'));
 });
 
-// ─── MEASURE DISTANCE ─────────────────────────────────────────────────────
+// ─── MEASURE TOOLS ────────────────────────────────────────────────────────
 let measuring=false,measurePts=[],measureLines=[],measureMarkers=[];
-
 document.getElementById('measure-tog').addEventListener('click',function(){
   measuring=!measuring;this.classList.toggle('on',measuring);
   document.getElementById('measure-result').classList.toggle('show',measuring);
-  if(measuring){map.getContainer().style.cursor='crosshair';notify('Click map to measure distance');}
-  else{map.getContainer().style.cursor='';}
+  map.getContainer().style.cursor=measuring?'crosshair':'';
+  if(measuring)notify('Click map to measure distance');
 });
-
 map.on('click',e=>{
   if(!measuring)return;
   measurePts.push(e.latlng);
-  const m=L.circleMarker(e.latlng,{radius:5,color:'#00ff88',fillColor:'#00ff88',fillOpacity:1,weight:2}).addTo(map);
-  measureMarkers.push(m);
+  measureMarkers.push(L.circleMarker(e.latlng,{radius:5,color:'#00ff88',fillColor:'#00ff88',fillOpacity:1,weight:2}).addTo(map));
   if(measurePts.length>1){
-    const line=L.polyline(measurePts,{color:'#00ff88',weight:2,dashArray:'5 5',opacity:0.9}).addTo(map);
-    measureLines.push(line);
-    const total=measurePts.reduce((sum,pt,i)=>{if(i===0)return 0;return sum+measurePts[i-1].distanceTo(pt);},0);
+    measureLines.push(L.polyline(measurePts,{color:'#00ff88',weight:2,dashArray:'5 5',opacity:0.9}).addTo(map));
+    const total=measurePts.reduce((sum,pt,i)=>i===0?0:sum+measurePts[i-1].distanceTo(pt),0);
     document.getElementById('measure-dist').textContent=total>=1000?`${(total/1000).toFixed(2)} km`:`${Math.round(total)} m`;
     document.getElementById('measure-pts').textContent=`${measurePts.length} points`;
   }
 });
-
 document.getElementById('clear-measure').addEventListener('click',()=>{
-  measurePts=[];
-  measureLines.forEach(l=>map.removeLayer(l));measureLines=[];
+  measurePts=[];measureLines.forEach(l=>map.removeLayer(l));measureLines=[];
   measureMarkers.forEach(m=>map.removeLayer(m));measureMarkers=[];
   document.getElementById('measure-dist').textContent='0.00 km';
   document.getElementById('measure-pts').textContent='Click map points to measure';
 });
 
-// ─── MEASURE AREA ─────────────────────────────────────────────────────────
 let areaMode=false,areaPts=[],areaPolygon=null;
-
 document.getElementById('area-tog').addEventListener('click',function(){
   areaMode=!areaMode;this.classList.toggle('on',areaMode);
   document.getElementById('area-result').style.display=areaMode?'block':'none';
-  if(areaMode){map.getContainer().style.cursor='crosshair';notify('Click to draw area polygon — double-click to finish');}
-  else{map.getContainer().style.cursor='';}
+  map.getContainer().style.cursor=areaMode?'crosshair':'';
+  if(areaMode)notify('Click to draw area polygon — double-click to finish');
 });
-
 map.on('click',e=>{
   if(!areaMode)return;
   areaPts.push(e.latlng);
   if(areaPolygon)map.removeLayer(areaPolygon);
   if(areaPts.length>2){
     areaPolygon=L.polygon(areaPts,{color:'#9d6fff',fillColor:'#9d6fff',fillOpacity:0.15,weight:2}).addTo(map);
-    const area=L.GeometryUtil?L.GeometryUtil.geodesicArea(areaPts):calcArea(areaPts);
-    document.getElementById('area-val').textContent=area>=1000000?`${(area/1000000).toFixed(2)} km²`:`${Math.round(area)} m²`;
+    const R=6371000;let area=0;
+    for(let i=0;i<areaPts.length;i++){
+      const j=(i+1)%areaPts.length;
+      const lat1=areaPts[i].lat*Math.PI/180,lat2=areaPts[j].lat*Math.PI/180;
+      const lon1=areaPts[i].lng*Math.PI/180,lon2=areaPts[j].lng*Math.PI/180;
+      area+=lon1*Math.sin(lat2)-lon2*Math.sin(lat1);
+    }
+    const val=Math.abs(area/2)*R*R;
+    document.getElementById('area-val').textContent=val>=1000000?`${(val/1000000).toFixed(2)} km²`:`${Math.round(val)} m²`;
   }
 });
-
-map.on('dblclick',()=>{if(areaMode){areaPts=[];if(areaPolygon)map.removeLayer(areaPolygon);}});
-
-function calcArea(pts){
-  if(pts.length<3)return 0;
-  const R=6371000;let area=0;
-  for(let i=0;i<pts.length;i++){
-    const j=(i+1)%pts.length;
-    const lat1=pts[i].lat*Math.PI/180,lat2=pts[j].lat*Math.PI/180;
-    const lon1=pts[i].lng*Math.PI/180,lon2=pts[j].lng*Math.PI/180;
-    area+=lon1*Math.sin(lat2)-lon2*Math.sin(lat1);
-  }
-  return Math.abs(area/2)*R*R;
-}
-
+map.on('dblclick',()=>{if(areaMode){areaMode=false;document.getElementById('area-tog').classList.remove('on');map.getContainer().style.cursor='';notify('Area measurement complete');}});
 document.getElementById('clear-area').addEventListener('click',()=>{
   areaPts=[];if(areaPolygon){map.removeLayer(areaPolygon);areaPolygon=null;}
   document.getElementById('area-val').textContent='0.00 km²';
 });
 
-// ─── CROSSHAIR ────────────────────────────────────────────────────────────
+// ─── UTILITIES ────────────────────────────────────────────────────────────
 document.getElementById('cross-tog').addEventListener('click',function(){
-  this.classList.toggle('on');
-  document.getElementById('crosshair').classList.toggle('show',this.classList.contains('on'));
+  this.classList.toggle('on');document.getElementById('crosshair').classList.toggle('show',this.classList.contains('on'));
 });
 
-// ─── GPS LOCATION ─────────────────────────────────────────────────────────
 let gpsMarker=null,gpsWatchId=null;
 document.getElementById('gps-tog').addEventListener('click',function(){
   const on=this.classList.toggle('on');
@@ -1493,70 +1548,39 @@ document.getElementById('gps-tog').addEventListener('click',function(){
   }
 });
 
-// ─── BOOKMARKS ────────────────────────────────────────────────────────────
 let bookmarks=JSON.parse(localStorage.getItem('geocommand_bm')||'[]');
-renderBookmarks();
-
-document.getElementById('add-bookmark').addEventListener('click',()=>{
-  const c=map.getCenter();
-  const name=prompt('Bookmark name:',`Point ${bookmarks.length+1}`);
-  if(!name)return;
-  bookmarks.push({name,lat:c.lat.toFixed(5),lon:c.lng.toFixed(5)});
-  localStorage.setItem('geocommand_bm',JSON.stringify(bookmarks));
-  renderBookmarks();notify('Bookmark saved: '+name);
-});
-
-document.getElementById('clear-bookmarks').addEventListener('click',()=>{
-  if(confirm('Clear all bookmarks?')){bookmarks=[];localStorage.setItem('geocommand_bm',JSON.stringify(bookmarks));renderBookmarks();}
-});
-
 function renderBookmarks(){
   const el=document.getElementById('bookmarks-list');
   if(!bookmarks.length){el.innerHTML='<div style="color:var(--text3);font-size:11px;font-family:var(--font-mono);text-align:center;padding:8px">No bookmarks yet</div>';return;}
-  el.innerHTML=bookmarks.map((b,i)=>`
-    <div class="bookmark-item" onclick="flyTo(${b.lat},${b.lon},14)">
-      <span style="color:var(--amber)">⭐</span>
-      <div class="bm-go">
-        <div>${b.name}</div>
-        <div class="bm-coords">${b.lat}, ${b.lon}</div>
-      </div>
-      <button class="bm-del" onclick="event.stopPropagation();deleteBM(${i})">✕</button>
-    </div>
-  `).join('');
+  el.innerHTML=bookmarks.map((b,i)=>`<div class="bookmark-item" onclick="flyTo(${b.lat},${b.lon},14)"><span style="color:var(--amber)">⭐</span><div class="bm-go"><div>${b.name}</div><div class="bm-coords">${b.lat}, ${b.lon}</div></div><button class="bm-del" onclick="event.stopPropagation();deleteBM(${i})">✕</button></div>`).join('');
 }
-
+renderBookmarks();
+document.getElementById('add-bookmark').addEventListener('click',()=>{
+  const c=map.getCenter();const name=prompt('Bookmark name:',`Point ${bookmarks.length+1}`);
+  if(!name)return;bookmarks.push({name,lat:c.lat.toFixed(5),lon:c.lng.toFixed(5)});
+  localStorage.setItem('geocommand_bm',JSON.stringify(bookmarks));renderBookmarks();notify('Bookmark saved: '+name);
+});
+document.getElementById('clear-bookmarks').addEventListener('click',()=>{
+  if(confirm('Clear all bookmarks?')){bookmarks=[];localStorage.setItem('geocommand_bm',JSON.stringify(bookmarks));renderBookmarks();}
+});
 function deleteBM(i){bookmarks.splice(i,1);localStorage.setItem('geocommand_bm',JSON.stringify(bookmarks));renderBookmarks();}
 
-// ─── MAP BUTTONS ──────────────────────────────────────────────────────────
 document.getElementById('btn-home').addEventListener('click',()=>map.flyTo([20,20],3,{duration:1.5}));
 document.getElementById('btn-locate').addEventListener('click',()=>{
   navigator.geolocation.getCurrentPosition(pos=>{flyTo(pos.coords.latitude,pos.coords.longitude,14);},()=>notify('Location unavailable'));
 });
 document.getElementById('btn-help').addEventListener('click',()=>document.getElementById('help-box').classList.toggle('show'));
 
-// ─── MAP POPUPS on right-click ────────────────────────────────────────────
 map.on('contextmenu',e=>{
-  const utm=latLonToUTM(e.latlng.lat,e.latlng.lng);
-  const mgrs=latLonToMGRS(e.latlng.lat,e.latlng.lng);
-  L.popup().setLatLng(e.latlng).setContent(`
-    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;min-width:200px">
-      <strong style="font-size:12px">📌 Location Info</strong><br>
-      <span style="color:#8fa3bf">GPS:</span> ${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}<br>
-      <span style="color:#8fa3bf">UTM:</span> ${utm.zone}${utm.letter} ${utm.easting}E ${utm.northing}N<br>
-      <span style="color:#8fa3bf">MGRS:</span> ${mgrs}<br>
-      <button onclick="navigator.clipboard.writeText('${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}')" style="margin-top:6px;padding:3px 8px;font-size:10px;cursor:pointer;font-family:'JetBrains Mono',monospace">📋 Copy GPS</button>
-    </div>
-  `).openOn(map);
+  const utm=latLonToUTM(e.latlng.lat,e.latlng.lng), mgrs=latLonToMGRS(e.latlng.lat,e.latlng.lng);
+  L.popup().setLatLng(e.latlng).setContent(`<div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;min-width:200px"><strong style="font-size:12px">📌 Location Info</strong><br><span style="color:#8fa3bf">GPS:</span> ${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}<br><span style="color:#8fa3bf">UTM:</span> ${utm.zone}${utm.letter} ${utm.easting}E ${utm.northing}N<br><span style="color:#8fa3bf">MGRS:</span> ${mgrs}<br><button onclick="navigator.clipboard.writeText('${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}')" style="margin-top:6px;padding:3px 8px;font-size:10px;cursor:pointer;font-family:'JetBrains Mono',monospace">📋 Copy GPS</button></div>`).openOn(map);
 });
 
-// ─── NOTIFY ───────────────────────────────────────────────────────────────
 function notify(msg,dur=2200){
-  const n=document.getElementById('notif');
-  n.textContent=msg;n.classList.add('show');
+  const n=document.getElementById('notif');n.textContent=msg;n.classList.add('show');
   clearTimeout(n._t);n._t=setTimeout(()=>n.classList.remove('show'),dur);
 }
 
-// ─── KEYBOARD SHORTCUTS ───────────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
   if(e.key==='/'||e.key==='f'){document.getElementById('search-input').focus();e.preventDefault();}
@@ -1565,7 +1589,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='l')navigator.geolocation.getCurrentPosition(p=>flyTo(p.coords.latitude,p.coords.longitude,14));
 });
 
-notify('Welcome to GeoCommand! Right-click map for coords. Press / to search.', 3500);
+notify('Welcome to GeoCommand! Grid styled like GISsurfer.', 3500);
 </script>
 </body>
 </html>
