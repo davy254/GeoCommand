@@ -278,10 +278,10 @@
 
   /* Grid labels - GISsurfer style */
   .hundredkm-label{
-    background:rgba(204,255,204,0.9); /* #CCFFCC */
+    background:rgba(0,255,136,0.9);
     color:#000;
-    padding:2px 4px;
-    border:1px solid #000;
+    padding:3px 6px;
+    border:1px solid rgba(0,0,0,0.3);
     border-radius:2px;
     font-family:'JetBrains Mono',monospace;
     font-weight:700;
@@ -291,10 +291,10 @@
   }
   
   .tick-label-east{
-    background:#00FFFF; /* Cyan */
+    background:#00d4ff;
     color:#000;
-    padding:1px 3px;
-    border:1px solid #000;
+    padding:2px 5px;
+    border:1px solid rgba(0,0,0,0.3);
     border-radius:2px;
     font-family:'JetBrains Mono',monospace;
     font-weight:700;
@@ -304,10 +304,10 @@
   }
   
   .tick-label-north{
-    background:#FFCC00; /* Amber/Yellow */
+    background:#ffb800;
     color:#000;
-    padding:1px 3px;
-    border:1px solid #000;
+    padding:2px 5px;
+    border:1px solid rgba(0,0,0,0.3);
     border-radius:2px;
     font-family:'JetBrains Mono',monospace;
     font-weight:700;
@@ -359,7 +359,7 @@
         <div id="logo-icon">🌐</div>
         <div>
           <h1>GeoCommand</h1>
-          <span>Advanced Basemap Viewer v2.4</span>
+          <span>Advanced Basemap Viewer v2.0</span>
         </div>
       </div>
       <div id="status-bar">
@@ -398,7 +398,7 @@
             <div class="bm-badge">Default</div>
           </div>
           <div class="bm-card" data-bm="satellite">
-            <div class="bm-icon"></div>
+            <div class="bm-icon">🛰</div>
             <div class="bm-name">Satellite</div>
             <div class="bm-desc">Esri Imagery</div>
             <div class="bm-badge">HD</div>
@@ -410,7 +410,7 @@
             <div class="bm-badge">Contours</div>
           </div>
           <div class="bm-card" data-bm="dark">
-            <div class="bm-icon"></div>
+            <div class="bm-icon">🌑</div>
             <div class="bm-name">Dark</div>
             <div class="bm-desc">CartoDB Dark</div>
             <div class="bm-badge">Night</div>
@@ -451,7 +451,7 @@
 
       <!-- UTM GRID -->
       <div class="section">
-        <div class="section-label"> Grid Overlays</div>
+        <div class="section-label">📐 Grid Overlays</div>
         <div class="toggle-row" id="utm-toggle-row">
           <div class="toggle-left">
             <span class="toggle-icon">📏</span>
@@ -485,7 +485,7 @@
 
         <div class="toggle-row" id="mgrs-toggle-row" style="margin-top:5px">
           <div class="toggle-left">
-            <span class="toggle-icon"></span>
+            <span class="toggle-icon">🔢</span>
             <div>
               <div class="toggle-label">MGRS Grid</div>
               <div class="toggle-sub">Military Grid Reference System</div>
@@ -615,7 +615,7 @@
           <div class="info-row"><span class="info-key">Scale</span><span class="info-val" id="info-scale">—</span></div>
         </div>
         <div style="margin-top:6px">
-          <button class="btn" id="copy-coords"> Copy All Coords</button>
+          <button class="btn" id="copy-coords">📋 Copy All Coords</button>
         </div>
       </div>
 
@@ -679,7 +679,6 @@ const BASEMAPS = {
 };
 
 // ─── MAP INIT ─────────────────────────────────────────────────────────────
-// Default view set to Kenya (37MCV) to match the video example
 const map = L.map('map',{center:[0.5,37],zoom:7,zoomControl:true,attributionControl:true});
 L.control.scale({imperial:true,metric:true,position:'bottomleft'}).addTo(map);
 
@@ -687,7 +686,7 @@ let currentBasemap = L.tileLayer(BASEMAPS.satellite.url,{attribution:BASEMAPS.sa
 let hybridLabels = null;
 let nauticalOverlay = null;
 
-// ── UTM MATH ─────────────────────────────────────────────────────────────
+// ─── UTM MATH ─────────────────────────────────────────────────────────────
 function latLonToUTM(lat,lon){
   const a=6378137,f=1/298.257223563,b=a*(1-f),e2=(a*a-b*b)/(a*a);
   const zone=Math.floor((lon+180)/6)+1;
@@ -775,7 +774,7 @@ function parseCoord(str,hint){
   return null;
 }
 
-// ─── SEARCH ───────────────────────────────────────────────────────────────
+// ─── SEARCH ──────────────────────────────────────────────────────────────
 let searchType='auto', searchMarker=null;
 document.querySelectorAll('.stype-btn').forEach(b=>{
   b.addEventListener('click',()=>{
@@ -846,7 +845,7 @@ document.getElementById('opacity-slider').addEventListener('input',function(){
   currentBasemap.setOpacity(this.value/100);
 });
 
-// ── DEBOUNCE UTILITY ─────────────────────────────────────────────────────
+// ─── DEBOUNCE UTILITY ─────────────────────────────────────────────────────
 function debounce(func, wait) {
   let timeout;
   return function(...args) {
@@ -928,20 +927,26 @@ document.getElementById('utm-opacity').addEventListener('input',function(){docum
 document.getElementById('utm-labels-tog').addEventListener('click',function(){utmLabelsOn=!utmLabelsOn;this.classList.toggle('on',utmLabelsOn);if(utmOn)drawUTMGrid();});
 const debouncedDrawUTMGrid = debounce(drawUTMGrid, 150);
 
-// ─── MGRS GRID WITH GISsurfer STYLE ───────────────────────────────────────
+// ─── GISsurfer GRID LOGIC ─────────────────────────────────────────────────
 let mgrsGridLayer=null,mgrsOn=true;
-let currentGridLevel = '100km';
+let gridZoneLabel=[],gridZoneLabelIcon=[];
+let grid100kmLabelAry=[],grid100kmIconAry=[];
+let gridLineLabels=[];
+let gridLineWhiteEW=[],gridLineWhiteNS=[];
+let gridLineBlackEW=[],gridLineBlackNS=[];
 
-function updateGridLevelIndicator(level) {
-  currentGridLevel = level;
-  const indicator = document.getElementById('grid-level-indicator');
-  indicator.textContent = level + ' Grid';
-}
+// Grid configuration from GISsurfer
+const gridLabelColor100km = "CCFFCC";
+const gridLabelColorLineEasting = "00FFFF";
+const gridLabelColorLineNorthing = "FFCC00";
+const gridLabelColorZone = "FFCCCC";
+const gridLineLabelFontSize = "1.25em";
 
-function drawMGRSGrid() {
+function grid0Master(calledFrom, action) {
   if (mgrsGridLayer) { map.removeLayer(mgrsGridLayer); }
   const bounds = map.getBounds();
   const zoom = map.getZoom();
+  const color = document.getElementById('mgrs-color').value;
   const baseOpacity = parseInt(document.getElementById('mgrs-opacity').value) / 100;
   const precisionMode = document.getElementById('mgrs-precision').value;
   
@@ -986,7 +991,9 @@ function drawMGRSGrid() {
     else { gridLevel = '1m'; labelLength = 5; }
   }
 
-  updateGridLevelIndicator(gridLevel);
+  // Update grid level indicator
+  const indicator = document.getElementById('grid-level-indicator');
+  indicator.textContent = gridLevel + ' Grid';
 
   const zones = new Set();
   const center = map.getCenter();
@@ -1050,18 +1057,18 @@ function drawMGRSGrid() {
         if (is100km) {
           // 100km boundaries - thick green
           lineColor = '#00FF00';
-          lineWeight = 2.5;
-          lineOpacity = 0.8;
+          lineWeight = 5;
+          lineOpacity = 0.6;
         } else if (gridLevel === '100km' || gridLevel === '10km') {
           // Coarser levels - thick green
           lineColor = '#00FF00';
-          lineWeight = 2.0;
-          lineOpacity = baseOpacity;
+          lineWeight = 4;
+          lineOpacity = 0.7;
         } else {
           // Finer levels (1km, 100m, etc) - thin dark/black
-          lineColor = '#333333';
-          lineWeight = 1.0;
-          lineOpacity = baseOpacity;
+          lineColor = '#000000';
+          lineWeight = 2;
+          lineOpacity = 0.7;
         }
         
         L.polyline(pts, { 
@@ -1099,7 +1106,7 @@ function drawMGRSGrid() {
 }
 
 function add100kmLabels(layer, bounds, zone, hem, zoom) {
-  if (zoom < 4 || zoom > 9) return;
+  if (zoom < 6 || zoom > 9) return;
   
   const south = Math.max(bounds.getSouth(), -80), north = Math.min(bounds.getNorth(), 84);
   const west = Math.max(bounds.getWest(), -180), east = Math.min(bounds.getEast(), 180);
@@ -1328,18 +1335,18 @@ function addTickLabels(layer, bounds, zone, hem, spacing, labelLength) {
 document.getElementById('mgrs-tog').addEventListener('click',function(){
   mgrsOn=!mgrsOn;this.classList.toggle('on',mgrsOn);
   document.getElementById('mgrs-options').classList.toggle('show',mgrsOn);
-  if(mgrsOn){drawMGRSGrid();map.on('moveend zoomend',debouncedDrawMGRSGrid);}
+  if(mgrsOn){grid0Master("toggle on", 1);map.on('moveend zoomend',debouncedDrawMGRSGrid);}
   else{if(mgrsGridLayer){map.removeLayer(mgrsGridLayer);mgrsGridLayer=null;}map.off('moveend zoomend',debouncedDrawMGRSGrid);}
 });
-const debouncedDrawMGRSGrid = debounce(drawMGRSGrid, 150);
+const debouncedDrawMGRSGrid = debounce(grid0Master, 150);
 
 ['mgrs-color','mgrs-opacity','mgrs-precision'].forEach(id=>{
   const el=document.getElementById(id);
-  el.addEventListener('change',()=>{if(mgrsOn)drawMGRSGrid();});
-  el.addEventListener('input',function(){if(id==='mgrs-opacity')document.getElementById('mgrs-opacity-val').textContent=this.value+'%';if(mgrsOn)drawMGRSGrid();});
+  el.addEventListener('change',()=>{if(mgrsOn)grid0Master("change", 1);});
+  el.addEventListener('input',function(){if(id==='mgrs-opacity')document.getElementById('mgrs-opacity-val').textContent=this.value+'%';if(mgrsOn)grid0Master("input", 1);});
 });
 
-// ── GRATICULE ────────────────────────────────────────────────────────────
+// ─── GRATICULE ────────────────────────────────────────────────────────────
 let gratLayer=null,gratOn=false;
 function drawGraticule(){
   if(gratLayer)map.removeLayer(gratLayer);
@@ -1490,7 +1497,7 @@ document.getElementById('btn-help').addEventListener('click',()=>document.getEle
 
 map.on('contextmenu',e=>{
   const utm=latLonToUTM(e.latlng.lat,e.latlng.lng), mgrs=latLonToMGRS(e.latlng.lat,e.latlng.lng);
-  L.popup().setLatLng(e.latlng).setContent(`<div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;min-width:200px"><strong style="font-size:12px"> Location Info</strong><br><span style="color:#8fa3bf">GPS:</span> ${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}<br><span style="color:#8fa3bf">UTM:</span> ${utm.zone}${utm.letter} ${utm.easting}E ${utm.northing}N<br><span style="color:#8fa3bf">MGRS:</span> ${mgrs}<br><button onclick="navigator.clipboard.writeText('${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}')" style="margin-top:6px;padding:3px 8px;font-size:10px;cursor:pointer;font-family:'JetBrains Mono',monospace">📋 Copy GPS</button></div>`).openOn(map);
+  L.popup().setLatLng(e.latlng).setContent(`<div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;min-width:200px"><strong style="font-size:12px">📌 Location Info</strong><br><span style="color:#8fa3bf">GPS:</span> ${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}<br><span style="color:#8fa3bf">UTM:</span> ${utm.zone}${utm.letter} ${utm.easting}E ${utm.northing}N<br><span style="color:#8fa3bf">MGRS:</span> ${mgrs}<br><button onclick="navigator.clipboard.writeText('${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}')" style="margin-top:6px;padding:3px 8px;font-size:10px;cursor:pointer;font-family:'JetBrains Mono',monospace">📋 Copy GPS</button></div>`).openOn(map);
 });
 
 function notify(msg,dur=2200){
@@ -1506,7 +1513,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='l')navigator.geolocation.getCurrentPosition(p=>flyTo(p.coords.latitude,p.coords.longitude,14));
 });
 
-notify('Welcome to GeoCommand! Grid styled like GISsurfer.', 3500);
+notify('Welcome to GeoCommand!', 3500);
 </script>
 </body>
 </html>
