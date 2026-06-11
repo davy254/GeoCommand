@@ -43,7 +43,7 @@
 
     <style>
         /* Minimal Custom CSS for Leaflet Overrides & Complex Animations */
-        body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; overflow: hidden; }
+        body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; overflow: hidden; margin: 0; padding: 0; height: 100%; width: 100%; }
         #map_div_id { position: absolute; inset: 0; z-index: 0; background-color: #e2e8f0; }
         
         /* Modern Sidebar Transition */
@@ -71,10 +71,9 @@
         }
         .leaflet-control-zoom a:hover { background-color: #f1f5f9 !important; color: #0f172a !important; }
 
-        /* Grid Label Styling (Preserved from original logic but cleaned) */
+        /* Grid Label Styling */
         .grid_line_labels_class { background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); border-radius: 4px; padding: 2px 4px; font-size: 11px; font-weight: 600; color: #334155; border: 1px solid rgba(0,0,0,0.1); }
     </style>
-
 </head>
 <body class="text-slate-800 antialiased">
 
@@ -82,7 +81,7 @@
     <div id="progress_container_div_id" class="fixed inset-0 z-[9999] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center hidden">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
         <div id="progress_content_div_id" class="text-sm font-semibold text-slate-600">Loading GIS Data...</div>
-        <button onclick="progress_indicator(null, 'close', null)" class="mt-4 px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium transition">Cancel</button each="cancel">
+        <button onclick="progress_indicator(null, 'close', null)" class="mt-4 px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium transition">Cancel</button>
     </div>
 
     <!-- Main Map Container -->
@@ -90,7 +89,6 @@
 
     <!-- Modernized GIS Sidebar -->
     <aside id="gis_sidebar_container_div_id" class="fixed top-0 left-0 h-full w-full md:w-[400px] bg-surface shadow-2xl z-[1000] flex flex-col border-r border-slate-200">
-        <!-- Sidebar Header -->
         <div class="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50">
             <div>
                 <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -103,16 +101,13 @@
             </button>
         </div>
         
-        <!-- Sidebar Content -->
         <div id="gis_layer_content_div_id" class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
-            <!-- Dynamic content injected here by JS -->
             <div class="text-center py-10 text-slate-400">
                 <i class="ph ph-map-trifold text-4xl mb-2"></i>
                 <p class="text-sm">No layers loaded. Use the Menu to add GIS overlays.</p>
-            </div are>
+            </div>
         </div>
 
-        <!-- Sidebar Footer -->
         <div class="p-4 border-t border-slate-100 bg-slate-50 flex gap-2">
             <button onclick="gis_16_sidebar_surf_table_of_contents('help')" class="flex-1 py-2 px-4 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2">
                 <i class="ph ph-question"></i> Help
@@ -122,7 +117,6 @@
 
     <!-- Top Right Controls (Basemap & Overlays) -->
     <div id="mouse_TOP_RIGHT_container_div_id" class="fixed top-4 right-4 z-[900] flex flex-col gap-2">
-        <!-- Basemap Dropdown Trigger -->
         <div class="relative group">
             <button id="TOP_RIGHT_basemap_button_div_id" class="bg-surface hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg shadow-lg border border-slate-200 font-semibold text-sm flex items-center gap-2 transition">
                 <i class="ph ph-map-pin text-primary"></i> <span id="basemap_label">Basemaps</span> <i class="ph ph-caret-down"></i>
@@ -132,7 +126,6 @@
             </div>
         </div>
 
-        <!-- Overlay Dropdown Trigger -->
         <div class="relative group">
             <button id="TOP_RIGHT_overlay_left_button_div_id" class="bg-surface hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg shadow-lg border border-slate-200 font-semibold text-sm flex items-center gap-2 transition">
                 <i class="ph ph-stack text-success"></i> <span>Overlays</span> <i class="ph ph-caret-down"></i>
@@ -149,8 +142,7 @@
             <div id="mouse_BOTTOM_RIGHT_cursor_coordinate_div_id">Cursor: --</div>
             <div id="mouse_BOTTOM_RIGHT_center_coordinate_div_id">Center: --</div>
         </div>
-        <div id="mouse_BOTTOM_RIGHT_distance_div_id" class="pointer-events-auto"></div> <!-- Leaflet scale injects here -->
- “>
+        <div id="mouse_BOTTOM_RIGHT_distance_div_id" class="pointer-events-auto"></div>
     </div>
 
     <!-- Bottom Left Controls (Branding & GPS) -->
@@ -168,7 +160,6 @@
     <!-- Modern Modal / Message Container -->
     <div id="leaflet_message_container_id" class="fixed inset-0 z-[2000] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-surface w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[85vh]">
-            <!-- Modal Header -->
             <div class="flex items-center justify-between p-4 border-b border-slate-100">
                 <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                     <i class="ph ph-info text-primary"></i> Information
@@ -178,12 +169,10 @@
                 </button>
             </div>
             
-            <!-- Modal Body -->
             <div class="p-6 overflow-y-auto custom-scrollbar text-sm text-slate-600 leading-relaxed space-y-4">
                 <div id="leaflet_message_content_id"></div>
                 <textarea id="leaflet_message_content_to_select_id" class="hidden w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none" rows="6"></textarea>
                 
-                <!-- GIS Delete Form Container -->
                 <div id="gis_delete_container_div" class="hidden mt-4 p-4 bg-red-50 border border-red-100 rounded-xl">
                     <form name='gis_delete_form'>
                         <div id='gis_delete_content_div' class="space-y-2"></div>
@@ -191,7 +180,6 @@
                 </div>
             </div>
 
-            <!-- Modal Footer -->
             <div class="p-4 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-end gap-3">
                 <button onclick="close_screen_text(event)" class="px-5 py-2.5 bg-danger hover:bg-red-600 text-white font-semibold rounded-lg shadow-sm transition flex items-center gap-2">
                     <i class="ph ph-x-circle"></i> Close
@@ -219,132 +207,64 @@
     <div id="BOTTOM_CENTER_screenshot_div_id" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-16 h-16 z-[1500] cursor-s-resize hidden"></div>
 
     <!-- ======================================================================== -->
-    <!-- JAVASCRIPT LOGIC (Refactored for modern syntax, retaining core GIS math) -->
+    <!-- JAVASCRIPT LOGIC -->
     <!-- ======================================================================== -->
     <script>
-        // Modernized Global State Object
         const masu = {
-            debug_ix: -1,
-            debug_ary: [],
-            bo_ary: [],
+            debug_ix: -1, debug_ary: [], bo_ary: [],
             basemap_heading_content: "<div class='p-3 bg-slate-50 border-b border-slate-100 font-bold text-slate-700 text-sm'>Basemaps</div>",
-            basemap_master_ary: [],
-            basemap_menu_name_ary: [],
-            center_before_infowindow: "",
-            copy_button_alive: false,
-            copy_button_setup_once_done: false,
-            coord_error_txt: "",
-            delim_description_ary: [],
-            delim_marker_flag: "ON",
-            delim_marker_ary: [],
-            display_link_to_this_spot: false,
-            esri_roads_and_labels: "off",
-            flag_close_dropdown: false,
-            gis_initial_setup_done: false,
-            gis_toc_object_ary: [],
-            gis_toc_is_open: false,
-            gis_new_type: "rest",
-            gis_server_timeout: 25,
-            grid_on_screen: "",
-            grid_queue_action: "",
-            grid_0_master_bounds_old: 0,
-            grid_session_setup_done: false,
-            grid_0_master_in_use: false,
-            grid_line_label_font_size: "11px",
-            grid_label_color_100km: "10b981", // Tailwind emerald-500 hex
-            grid_label_color_100km_screen_corner: "059669",
-            grid_label_color_line_easting: "3b82f6", // Tailwind blue-500
-            grid_label_color_line_northing: "f59e0b", // Tailwind amber-500
-            grid_label_color_zone: "f43f5e", // Tailwind rose-500
-            grid_label_color_zone_screen_corner: "e11d48",
-            is_map_on_screen: "no",
-            display_jpg_error_ctr: 0,
-            key_ary: [],
-            // ... (Truncated for brevity, original initialization logic preserved but cleaned)
-            map_basemap_object_ary: [],
-            map_bo_one_definition_obj: {},
-            map_click_ctr: 0,
-            map_click_old_time: 0,
-            map_coordinate_display_format_new: false,
-            map_dblclick_new_time: 0,
-            map_crosshair_status: "off",
-            fitBounds_was_used: false,
-            map_is_starting: true,
-            map_listen_movestart_running: false,
-            map_listen_zoomstart_running: false,
-            menu_feature_on_color: "10b981",
-            menu_feature_off_color: "f43f5e",
-            msg_display_is_on: false,
-            msg_select_textarea: false,
-            mylocation_geolocation_support: "geolocation" in navigator,
-            mylocation_geolocation_status: "off",
+            basemap_master_ary: [], basemap_menu_name_ary: [], center_before_infowindow: "",
+            copy_button_alive: false, copy_button_setup_once_done: false, coord_error_txt: "",
+            delim_description_ary: [], delim_marker_flag: "ON", delim_marker_ary: [],
+            display_link_to_this_spot: false, esri_roads_and_labels: "off", flag_close_dropdown: false,
+            gis_initial_setup_done: false, gis_toc_object_ary: [], gis_toc_is_open: false,
+            gis_new_type: "rest", gis_server_timeout: 25, grid_on_screen: "", grid_queue_action: "",
+            grid_0_master_bounds_old: 0, grid_session_setup_done: false, grid_0_master_in_use: false,
+            grid_line_label_font_size: "11px", grid_label_color_100km: "10b981",
+            grid_label_color_100km_screen_corner: "059669", grid_label_color_line_easting: "3b82f6",
+            grid_label_color_line_northing: "f59e0b", grid_label_color_zone: "f43f5e",
+            grid_label_color_zone_screen_corner: "e11d48", is_map_on_screen: "no",
+            display_jpg_error_ctr: 0, key_ary: [], map_basemap_object_ary: [],
+            map_bo_one_definition_obj: {}, map_click_ctr: 0, map_click_old_time: 0,
+            map_coordinate_display_format_new: false, map_dblclick_new_time: 0, map_crosshair_status: "off",
+            fitBounds_was_used: false, map_is_starting: true, map_listen_movestart_running: false,
+            map_listen_zoomstart_running: false, menu_feature_on_color: "10b981", menu_feature_off_color: "f43f5e",
+            msg_display_is_on: false, msg_select_textarea: false,
+            mylocation_geolocation_support: "geolocation" in navigator, mylocation_geolocation_status: "off",
             mylocation_looking_msg: "<div class='text-center space-y-4'><p class='font-semibold text-slate-700'>Locating you...</p><div class='flex justify-center'><button onclick='mylocation_on_off(event,2)' class='px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium transition'>Cancel</button></div></div>",
-            mylocation_on_screen: false,
-            overlay_heading_content: "<div class='p-3 bg-slate-50 border-b border-slate-100 font-bold text-slate-700 text-sm'>Overlays</div>",
-            overlay_column_action_items: 2,
-            overlay_column_1_max: 0,
-            overlay_column_2: false,
-            overlay_column_2_trigger: 18,
-            overlay_help: "GISsurfer allows you to surf data on ArcGIS servers. Click 'Add GIS overlays' to begin.",
-            overlay_list_is_displayed: false,
-            overlay_from_link_modis_and_viirs: false,
-            overlay_ignore_click: false,
-            overlay_master_ary: [],
-            overlay_menu_name_ary: [],
-            overlay_initial_max: 6,
-            overlay_current_max: 6,
-            max_overlay_added_by_user: 0,
-            overlay_stack_num_next: 1,
-            overlay_zindex: 400,
-            rightclick_display_is_on: false,
-            runtime_error: false,
-            clipboard_copy_setup_done: false,
-            screenshot_touchscreen: "",
-            search_setup_done: false,
-            temp_ary: [],
-            temp_ary2: [],
-            utm_point_ary: [],
-            value_ary: [],
-            xmlhttp_ary: [],
-            map_zoom_control_used: false,
-            is_internet_explorer: false,
-            is_opera: false
+            mylocation_on_screen: false, overlay_heading_content: "<div class='p-3 bg-slate-50 border-b border-slate-100 font-bold text-slate-700 text-sm'>Overlays</div>",
+            overlay_column_action_items: 2, overlay_column_1_max: 0, overlay_column_2: false,
+            overlay_column_2_trigger: 18, overlay_help: "GISsurfer allows you to surf data on ArcGIS servers. Click 'Add GIS overlays' to begin.",
+            overlay_list_is_displayed: false, overlay_from_link_modis_and_viirs: false, overlay_ignore_click: false,
+            overlay_master_ary: [], overlay_menu_name_ary: [], overlay_initial_max: 6, overlay_current_max: 6,
+            max_overlay_added_by_user: 0, overlay_stack_num_next: 1, overlay_zindex: 400,
+            rightclick_display_is_on: false, runtime_error: false, clipboard_copy_setup_done: false,
+            screenshot_touchscreen: "", search_setup_done: false, temp_ary: [], temp_ary2: [],
+            utm_point_ary: [], value_ary: [], xmlhttp_ary: [], map_zoom_control_used: false,
+            is_internet_explorer: false, is_opera: false
         };
 
-        // Modernize XMLHttpRequest setup
         let xmlhttp_compatible = true;
         let xmlhttp;
-        if (window.XMLHttpRequest) {
-            xmlhttp = new XMLHttpRequest();
-        } else if (window.ActiveXObject) {
-            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-        } else {
-            xmlhttp_compatible = false;
-        }
-
-        // --- MODERNIZED UI FUNCTIONS ---
+        if (window.XMLHttpRequest) { xmlhttp = new XMLHttpRequest(); } 
+        else if (window.ActiveXObject) { xmlhttp = new ActiveXObject("Microsoft.XMLHTTP"); } 
+        else { xmlhttp_compatible = false; }
 
         function progress_indicator(e, action, type) {
             const container = document.getElementById("progress_container_div_id");
             const content = document.getElementById("progress_content_div_id");
-            
             if (action === "close") {
                 container.classList.add("hidden");
                 clearTimeout(masu.progress_timer);
-            } else if (action === "continue") {
-                // Modern spinner handles animation, no need for text-based >>====
             } else {
                 container.classList.remove("hidden");
                 let msg = "Processing...";
                 if (type === "startup") msg = "Initializing Map...";
                 else if (type === "attribute") msg = "Fetching GIS Attributes...";
                 else if (type === "manage" || type === "sidebar") msg = "Contacting GIS Server...";
-                
                 content.textContent = msg;
                 masu.progress_ctr = 0;
-                // Keep timeout for legacy backend compatibility, but UI is now a clean spinner
                 masu.progress_timer = setTimeout(() => progress_indicator(null, "continue", null), 75);
-           
             }
         }
 
@@ -360,11 +280,7 @@
             if (typeof masu.progress_timer_gis !== "undefined") {
                 progress_indicator(null, "close", null);
             }
-            
-            // Hide modals with fade effect
-            const modal = document.getElementById("leaflet_message_container_id");
-            modal.classList.add("hidden");
-            
+            document.getElementById("leaflet_message_container_id").classList.add("hidden");
             document.getElementById('gis_delete_container_div').classList.add("hidden");
             document.getElementById('gis_delete_content_div').innerHTML = "";
             
@@ -376,52 +292,26 @@
             }
         }
 
-        function display_message(action) {
-            const modal = document.getElementById("leaflet_message_container_id");
-            const contentDiv = document.getElementById("leaflet_message_content_id");
-            const textarea = document.getElementById("leaflet_message_content_to_select_id");
-            
-            contentDiv.innerHTML = masu.msg;
-            textarea.style.display = "none";
-            
-            modal.classList.remove("hidden");
-            modal.scrollTop = 0;
-            
-            if (masu.msg_select_textarea !== false) {
-                masu.msg_select_textarea = false;
-                textarea.style.display = "block";
-                textarea.select();
-            }
-        }
-
-        // --- GIS SIDEBAR MODERNIZATION ---
         function gis_12_sidebar_open_close_prior(e, action, called_from) {
             if(e) { e.stopPropagation(); }
             const sidebar = document.getElementById("gis_sidebar_container_div_id");
-            
-            if (action === 1) { // Open
+            if (action === 1) {
                 masu.gis_toc_is_open = true;
                 masu.save_center = masu.map.wrapLatLng(masu.map.getCenter());
                 masu.save_zoom = masu.map.getZoom();
-                
                 document.getElementById("gis_layer_content_div_id").innerHTML = masu.gis_toc_html || '<div class="text-center text-slate-400 py-10">Loading...</div>';
                 masu.gis_toc_url_prior = masu.gis_toc_url;
-                
                 sidebar.classList.add("open");
-                
-                // Adjust map bounds to not be hidden by sidebar on desktop
                 if (window.innerWidth >= 768) {
                     masu.map_div.style.width = "calc(100% - 400px)";
                     masu.map_div.style.left = "400px";
                 }
                 masu.map.invalidateSize();
                 masu.map.setView(masu.save_center, masu.map.getZoom());
-                
-            } else if (action === 2) { // Close
+            } else if (action === 2) {
                 masu.gis_toc_is_open = false;
                 close_screen_text(null);
                 sidebar.classList.remove("open");
-                
                 masu.map_div.style.width = "100%";
                 masu.map_div.style.left = "0px";
                 masu.map.invalidateSize();
@@ -429,35 +319,33 @@
             }
         }
 
-        // --- MODERNIZED BUTTON GENERATOR HELPER ---
-        // Replaces the old .button_medium_green and .button_medium_red classes
-        function getModernButtonClass(type) {
-            if (type === 'primary') {
-                return "w-full py-2.5 px-4 bg-primary hover:bg-blue-600 text-white font-semibold rounded-lg shadow-sm transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98]";
+        function gis_16_sidebar_surf_table_of_contents(action) {
+            close_screen_text(null);
+            if (action === "help") {
+                masu.msg = masu.gis_toc_help || "Help information goes here.";
+                document.getElementById("leaflet_message_content_id").innerHTML = masu.msg;
+                document.getElementById("leaflet_message_container_id").classList.remove("hidden");
             }
-            if (type === 'danger') {
-                return "w-full py-2.5 px-4 bg-danger hover:bg-red-600 text-white font-semibold rounded-lg shadow-sm transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98]";
-            }
-            if (type === 'secondary') {
-                return "w-full py-2.5 px-4 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold rounded-lg shadow-sm transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98]";
-            }
-            return "";
         }
 
-        // --- CORE INITIALIZATION (Preserved Logic, Modernized Hooks) ---
         async function initialize() {
             masu.map_div = document.getElementById("map_div_id");
             
             // Initialize Leaflet Map
             masu.map = L.map('map_div_id', {
                 keyboard: true,
-                zoomControl: false, // We will add it custom or let it be
+                zoomControl: false,
                 scrollWheelZoom: true,
                 crs: L.CRS.EPSG3857
             });
 
-            // Add default basemap
-            const defaultBasemap = L.esri.basemapLayer('Topographic');
+            // ✅ FIX: Use tiledMapLayer with National Map URL instead of esri.basemapLayer
+            const defaultBasemap = L.esri.tiledMapLayer({
+                url: 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer',
+                maxZoom: 16,
+                attribution: 'USGS The National Map'
+            });
+            
             defaultBasemap.addTo(masu.map);
             masu.basemap_current_obj = defaultBasemap;
             masu.basemap_current_name = "USA basemap";
@@ -473,14 +361,12 @@
             document.getElementById("BOTTOM_LEFT_container_div_id").classList.remove("hidden");
             
             // Inject custom zoom control to top left
-            const zoomControl = L.control.zoom({ position: 'topleft' }).addTo(masu.map);
-            // Style the zoom control via CSS above
+            L.control.zoom({ position: 'topleft' }).addTo(masu.map);
         }
 
         function setupMapListeners() {
             masu.map.on('mousemove', function(e) {
                 masu.latlng_obj = e.latlng;
-                // Simplified coordinate display update for demo
                 document.getElementById("mouse_BOTTOM_RIGHT_cursor_coordinate_div_id").textContent = 
                     `Cursor: ${masu.latlng_obj.lat.toFixed(5)}, ${masu.latlng_obj.lng.toFixed(5)}`;
             });
@@ -492,23 +378,11 @@
             });
         }
 
-        // --- PRESERVED COORDINATE MATH LIBRARY (Minified/Cleaned for space) ---
-        // Note: The extensive UTM/MGRS/USNG conversion math from the original file 
-        // is preserved here to ensure backend compatibility and accurate grid rendering.
-        // (Included in the full file, abbreviated here for the prompt response limit)
-        function LLtoUTM(lat, lon, utmcoords, zone) {
-            // ... [Original robust UTM conversion logic preserved] ...
-            // This ensures the grid lines and coordinate readouts remain 100% accurate.
-        }
-        
-        // ... [Other original math functions: UTMXYToLatLon, LLtoUSNG, etc. remain intact] ...
-
         // Boot the app
         window.onload = function() {
-            // Simulate primer checks
             masu.any_error = 0;
-            if (masu.any_error !==  “0”) {
-                display_message();
+            if (masu.any_error !== 0) {
+                // display_message();
             } else {
                 initialize();
             }
