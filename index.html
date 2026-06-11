@@ -27,11 +27,9 @@
   html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font-ui)}
   #app{display:flex;height:100vh;position:relative}
 
-  /* ─── MAP ─── */
   #map{flex:1;position:relative;z-index:1}
   .leaflet-container{background:#0a0d12}
 
-  /* ─── SIDEBAR ─── */
   #sidebar{
     width:var(--panel-w);min-width:var(--panel-w);
     background:var(--surface);border-right:1px solid var(--border);
@@ -39,7 +37,6 @@
     font-size:13px;overflow:hidden;
   }
 
-  /* Header */
   #header{
     padding:16px 18px 14px;border-bottom:1px solid var(--border);
     background:linear-gradient(135deg,var(--surface) 0%,#0f1825 100%);
@@ -61,13 +58,11 @@
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
   #cursor-coords{font-family:var(--font-mono);font-size:11px;color:var(--text2);flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 
-  /* Scroll area */
   #scroll-area{flex:1;overflow-y:auto;padding:14px 14px 20px}
   #scroll-area::-webkit-scrollbar{width:4px}
   #scroll-area::-webkit-scrollbar-track{background:transparent}
   #scroll-area::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
 
-  /* Section */
   .section{margin-bottom:18px}
   .section-label{
     font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
@@ -76,7 +71,6 @@
   }
   .section-label::after{content:'';flex:1;height:1px;background:var(--border)}
 
-  /* Search */
   #search-wrap{position:relative}
   #search-input{
     width:100%;padding:9px 36px 9px 12px;
@@ -90,9 +84,7 @@
     position:absolute;right:6px;top:50%;transform:translateY(-50%);
     background:none;border:none;cursor:pointer;color:var(--accent);font-size:16px;padding:4px
   }
-  #search-type{
-    display:flex;gap:4px;margin-top:6px;flex-wrap:wrap
-  }
+  #search-type{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
   .stype-btn{
     padding:4px 10px;border-radius:5px;font-size:11px;font-family:var(--font-mono);
     border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;
@@ -109,7 +101,6 @@
   #search-result .res-name{color:var(--green);font-size:12px;font-weight:600}
   #search-result .res-val{color:var(--accent)}
 
-  /* Basemaps */
   #basemap-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
   .bm-card{
     padding:10px 10px 8px;border-radius:8px;border:1.5px solid var(--border);
@@ -128,7 +119,6 @@
   }
   .bm-badge.new{background:rgba(0,255,136,0.1);color:var(--green);border-color:var(--green)}
 
-  /* Overlays / Toggles */
   .toggle-row{
     display:flex;align-items:center;justify-content:space-between;
     padding:8px 10px;background:var(--surface2);border-radius:7px;
@@ -150,7 +140,6 @@
   }
   .tog.on::after{transform:translateX(16px)}
 
-  /* Grid Controls */
   #utm-options,#mgrs-options{
     margin-top:6px;padding:8px 10px;background:var(--surface3);border-radius:6px;
     border:1px solid var(--border);display:none
@@ -173,7 +162,6 @@
     border-radius:5px;padding:4px 8px;font-size:11px;font-family:var(--font-mono);outline:none
   }
 
-  /* Info Panel */
   #info-panel{
     margin-top:4px;padding:10px 12px;background:var(--surface2);border-radius:8px;
     border:1px solid var(--border);font-family:var(--font-mono);font-size:11px
@@ -183,7 +171,6 @@
   .info-key{color:var(--text3)}
   .info-val{color:var(--accent);font-weight:500}
 
-  /* Measure Tool */
   #measure-result{
     margin-top:6px;padding:8px 10px;background:var(--surface3);border-radius:6px;
     border:1px solid var(--border);display:none;font-family:var(--font-mono);font-size:11px
@@ -192,7 +179,6 @@
   .meas-big{font-size:16px;font-weight:700;color:var(--green);font-family:var(--font-mono)}
   .meas-sub{color:var(--text3);margin-top:2px}
 
-  /* Buttons */
   .btn{
     width:100%;padding:8px 12px;border-radius:7px;border:1px solid var(--border);
     background:var(--surface2);color:var(--text);font-family:var(--font-mono);font-size:12px;
@@ -203,7 +189,6 @@
   .btn-group{display:flex;gap:6px}
   .btn-group .btn{flex:1}
 
-  /* Bookmarks */
   #bookmarks-list{display:flex;flex-direction:column;gap:4px}
   .bookmark-item{
     display:flex;align-items:center;gap:6px;padding:6px 10px;
@@ -216,7 +201,6 @@
   .bm-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:2px 4px}
   .bm-del:hover{color:var(--red)}
 
-  /* Map controls overlay */
   #map-controls{
     position:absolute;bottom:20px;right:20px;z-index:1000;
     display:flex;flex-direction:column;gap:6px
@@ -229,7 +213,6 @@
   }
   .map-btn:hover{background:var(--surface3);border-color:var(--accent);color:var(--accent)}
 
-  /* Crosshair - Always visible Red + */
   #crosshair{
     position:absolute;top:50%;left:calc(50% + var(--panel-w)/2);
     transform:translate(-50%,-50%);pointer-events:none;z-index:999;
@@ -241,7 +224,6 @@
   #crosshair::before{width:20px;height:2px;top:9px;left:0}
   #crosshair::after{width:2px;height:20px;top:0;left:9px}
 
-  /* Notification */
   #notif{
     position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;
     padding:8px 18px;background:var(--surface);border:1px solid var(--accent);
@@ -250,73 +232,79 @@
   }
   #notif.show{opacity:1}
 
-  /* Scale Bar */
   .leaflet-control-scale-line{
     background:rgba(10,13,18,0.8)!important;border-color:var(--accent)!important;
     color:var(--accent)!important;font-family:var(--font-mono)!important;font-size:10px!important;
   }
-
-  /* Attribution */
   .leaflet-control-attribution{
     background:rgba(10,13,18,0.85)!important;color:var(--text3)!important;font-size:9px!important
   }
   .leaflet-control-attribution a{color:var(--text3)!important}
-
-  /* Zoom */
   .leaflet-control-zoom a{
     background:var(--surface)!important;color:var(--text2)!important;
     border-color:var(--border)!important
   }
   .leaflet-control-zoom a:hover{background:var(--surface3)!important;color:var(--accent)!important}
 
-  /* Marker */
   .search-marker-icon{
     width:24px;height:24px;background:var(--red);border:2px solid #fff;
     border-radius:50% 50% 50% 0;transform:rotate(-45deg);
     box-shadow:0 2px 8px rgba(0,0,0,0.5)
   }
 
-  /* Grid labels - GISsurfer style */
-  .hundredkm-label{
-    background:rgba(0,255,136,0.9);
+  /* GISsurfer-style grid labels */
+  .grid-label-gdz{
+    background:#FFCCCC;
     color:#000;
-    padding:3px 6px;
-    border:1px solid rgba(0,0,0,0.3);
+    padding:2px 4px;
+    border:1px solid #000;
     border-radius:2px;
     font-family:'JetBrains Mono',monospace;
-    font-weight:700;
-    font-size:12px;
+    font-size:14px;
+    font-weight:bold;
     white-space:nowrap;
     pointer-events:none;
   }
   
-  .tick-label-east{
-    background:#00d4ff;
+  .grid-label-100km{
+    background:#CCFFCC;
     color:#000;
-    padding:2px 5px;
-    border:1px solid rgba(0,0,0,0.3);
+    padding:2px 4px;
+    border:1px solid #000;
     border-radius:2px;
     font-family:'JetBrains Mono',monospace;
-    font-weight:700;
-    font-size:11px;
+    font-size:13px;
+    font-weight:bold;
     white-space:nowrap;
     pointer-events:none;
   }
   
-  .tick-label-north{
-    background:#ffb800;
+  .grid-label-easting{
+    background:#00FFFF;
     color:#000;
-    padding:2px 5px;
-    border:1px solid rgba(0,0,0,0.3);
+    padding:1px 3px;
+    border:1px solid #000;
     border-radius:2px;
     font-family:'JetBrains Mono',monospace;
-    font-weight:700;
     font-size:11px;
+    font-weight:bold;
+    white-space:nowrap;
+    pointer-events:none;
+  }
+  
+  .grid-label-northing{
+    background:#FFCC00;
+    color:#000;
+    padding:1px 3px;
+    border:1px solid #000;
+    border-radius:2px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    font-weight:bold;
     white-space:nowrap;
     pointer-events:none;
   }
 
-  /* Grid level indicator */
   #grid-level-indicator{
     position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
     background:rgba(255,255,255,0.9);color:#000;
@@ -328,14 +316,12 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
 
-  /* Spinner */
   .spinner{
     display:inline-block;width:12px;height:12px;border:2px solid var(--border2);
     border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite
   }
   @keyframes spin{to{transform:rotate(360deg)}}
 
-  /* Help tooltip */
   #help-box{
     position:absolute;bottom:70px;right:16px;z-index:1001;
     padding:12px 14px;background:var(--surface);border:1px solid var(--border);
@@ -352,14 +338,13 @@
 </head>
 <body>
 <div id="app">
-  <!-- ─── SIDEBAR ─── -->
   <div id="sidebar">
     <div id="header">
       <div id="logo">
         <div id="logo-icon">🌐</div>
         <div>
           <h1>GeoCommand</h1>
-          <span>Advanced Basemap Viewer v2.0</span>
+          <span>Advanced Basemap Viewer v1.5</span>
         </div>
       </div>
       <div id="status-bar">
@@ -369,10 +354,8 @@
     </div>
 
     <div id="scroll-area">
-
-      <!-- SEARCH -->
       <div class="section">
-        <div class="section-label">🔍 Search & Navigate</div>
+        <div class="section-label"> Search & Navigate</div>
         <div id="search-wrap">
           <input id="search-input" type="text" placeholder="Place name, GPS, UTM, MGRS…" autocomplete="off"/>
           <button id="search-btn" title="Search">⏎</button>
@@ -387,7 +370,6 @@
         <div id="search-result"></div>
       </div>
 
-      <!-- BASEMAPS -->
       <div class="section">
         <div class="section-label">🗺 Basemap</div>
         <div id="basemap-grid">
@@ -398,7 +380,7 @@
             <div class="bm-badge">Default</div>
           </div>
           <div class="bm-card" data-bm="satellite">
-            <div class="bm-icon">🛰</div>
+            <div class="bm-icon"></div>
             <div class="bm-name">Satellite</div>
             <div class="bm-desc">Esri Imagery</div>
             <div class="bm-badge">HD</div>
@@ -410,7 +392,7 @@
             <div class="bm-badge">Contours</div>
           </div>
           <div class="bm-card" data-bm="dark">
-            <div class="bm-icon">🌑</div>
+            <div class="bm-icon"></div>
             <div class="bm-name">Dark</div>
             <div class="bm-desc">CartoDB Dark</div>
             <div class="bm-badge">Night</div>
@@ -449,7 +431,6 @@
         </div>
       </div>
 
-      <!-- UTM GRID -->
       <div class="section">
         <div class="section-label">📐 Grid Overlays</div>
         <div class="toggle-row" id="utm-toggle-row">
@@ -523,7 +504,6 @@
           </div>
         </div>
 
-        <!-- Lat/Lon Grid -->
         <div class="toggle-row" style="margin-top:5px">
           <div class="toggle-left">
             <span class="toggle-icon">🌐</span>
@@ -536,11 +516,8 @@
         </div>
       </div>
 
-      <!-- TOOLS -->
       <div class="section">
         <div class="section-label">🛠 Tools</div>
-
-        <!-- Measure -->
         <div class="toggle-row">
           <div class="toggle-left">
             <span class="toggle-icon">📏</span>
@@ -559,7 +536,6 @@
           </div>
         </div>
 
-        <!-- Area Measure -->
         <div class="toggle-row" style="margin-top:5px">
           <div class="toggle-left">
             <span class="toggle-icon">⬡</span>
@@ -576,7 +552,6 @@
           <button class="btn danger" id="clear-area" style="font-size:11px;padding:5px;margin-top:6px">✕ Clear Area</button>
         </div>
 
-        <!-- Crosshair -->
         <div class="toggle-row" style="margin-top:5px">
           <div class="toggle-left">
             <span class="toggle-icon">⊕</span>
@@ -588,10 +563,9 @@
           <button class="tog on" id="cross-tog" aria-label="Toggle crosshair"></button>
         </div>
 
-        <!-- Follow GPS -->
         <div class="toggle-row" style="margin-top:5px">
           <div class="toggle-left">
-            <span class="toggle-icon">📍</span>
+            <span class="toggle-icon"></span>
             <div>
               <div class="toggle-label">My Location</div>
               <div class="toggle-sub">Use device GPS</div>
@@ -601,7 +575,6 @@
         </div>
       </div>
 
-      <!-- CURRENT LOCATION INFO -->
       <div class="section">
         <div class="section-label">📌 Center Point Info</div>
         <div id="info-panel">
@@ -619,7 +592,6 @@
         </div>
       </div>
 
-      <!-- BOOKMARKS -->
       <div class="section">
         <div class="section-label">⭐ Bookmarks</div>
         <div class="btn-group" style="margin-bottom:8px">
@@ -628,16 +600,13 @@
         </div>
         <div id="bookmarks-list"></div>
       </div>
+    </div>
+  </div>
 
-    </div><!-- /scroll-area -->
-  </div><!-- /sidebar -->
-
-  <!-- ─── MAP ── -->
   <div id="map"></div>
   <div id="crosshair"></div>
   <div id="grid-level-indicator">100km Grid</div>
 
-  <!-- Map FAB controls -->
   <div id="map-controls">
     <div class="map-btn" id="btn-home" title="Go to World View">🏠</div>
     <div class="map-btn" id="btn-locate" title="My Location">📍</div>
@@ -664,9 +633,7 @@
 
 <div id="notif"></div>
 
-<!-- Scripts -->
 <script>
-// ─── CONFIG ─────────────────────────────────────────────────────────────
 const BASEMAPS = {
   osm:{url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',attr:'© <a href="https://openstreetmap.org">OpenStreetMap</a>',maxZoom:19},
   satellite:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attr:'© Esri',maxZoom:19},
@@ -678,7 +645,6 @@ const BASEMAPS = {
   light:{url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',attr:'© CartoDB',maxZoom:19}
 };
 
-// ─── MAP INIT ─────────────────────────────────────────────────────────────
 const map = L.map('map',{center:[0.5,37],zoom:7,zoomControl:true,attributionControl:true});
 L.control.scale({imperial:true,metric:true,position:'bottomleft'}).addTo(map);
 
@@ -686,7 +652,6 @@ let currentBasemap = L.tileLayer(BASEMAPS.satellite.url,{attribution:BASEMAPS.sa
 let hybridLabels = null;
 let nauticalOverlay = null;
 
-// ─── UTM MATH ─────────────────────────────────────────────────────────────
 function latLonToUTM(lat,lon){
   const a=6378137,f=1/298.257223563,b=a*(1-f),e2=(a*a-b*b)/(a*a);
   const zone=Math.floor((lon+180)/6)+1;
@@ -717,7 +682,6 @@ function utmToLatLon(zone,hem,E,N){
   return{lat:lat*180/Math.PI,lon:lon*180/Math.PI};
 }
 
-// ─── MGRS ─────────────────────────────────────────────────────────────────
 function latLonToMGRS(lat,lon){
   const utm=latLonToUTM(lat,lon);
   const colLetters='ABCDEFGHJKLMNPQRSTUVWXYZ';
@@ -774,7 +738,6 @@ function parseCoord(str,hint){
   return null;
 }
 
-// ─── SEARCH ──────────────────────────────────────────────────────────────
 let searchType='auto', searchMarker=null;
 document.querySelectorAll('.stype-btn').forEach(b=>{
   b.addEventListener('click',()=>{
@@ -816,7 +779,6 @@ document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key=
 
 function flyTo(lat,lon,zoom=14){map.flyTo([lat,lon],zoom,{duration:1.2,easeLinearity:0.5});updateInfoPanel(lat,lon);}
 
-// ─── BASEMAP SWITCHER ─────────────────────────────────────────────────────
 let activeBasemapKey = 'satellite';
 document.querySelectorAll('.bm-card').forEach(card=>{
   card.addEventListener('click',()=>{
@@ -845,7 +807,6 @@ document.getElementById('opacity-slider').addEventListener('input',function(){
   currentBasemap.setOpacity(this.value/100);
 });
 
-// ─── DEBOUNCE UTILITY ─────────────────────────────────────────────────────
 function debounce(func, wait) {
   let timeout;
   return function(...args) {
@@ -854,7 +815,6 @@ function debounce(func, wait) {
   };
 }
 
-// ─── UTM GRID ─────────────────────────────────────────────────────────────
 let utmGridLayer=null,utmOn=false,utmLabelsOn=true;
 const UTM_BANDS='CDEFGHJKLMNPQRSTUVWX';
 function utmBandLetter(lat){return UTM_BANDS[Math.min(Math.floor((lat+80)/8),19)]||'';}
@@ -900,7 +860,7 @@ function drawUTMGrid(){
         const lonMid=(Math.max(lon,west)+Math.min(lon+6,east))/2;
         L.marker([latMid,lonMid],{
           icon:L.divIcon({
-            className:'hundredkm-label',
+            className:'grid-label-gdz',
             html:`<span style="font-size:${fontSize}px">${zoneNum}${band}</span>`,
             iconSize:[0,0],
             iconAnchor:[0,0]
@@ -927,26 +887,12 @@ document.getElementById('utm-opacity').addEventListener('input',function(){docum
 document.getElementById('utm-labels-tog').addEventListener('click',function(){utmLabelsOn=!utmLabelsOn;this.classList.toggle('on',utmLabelsOn);if(utmOn)drawUTMGrid();});
 const debouncedDrawUTMGrid = debounce(drawUTMGrid, 150);
 
-// ─── GISsurfer GRID LOGIC ─────────────────────────────────────────────────
 let mgrsGridLayer=null,mgrsOn=true;
-let gridZoneLabel=[],gridZoneLabelIcon=[];
-let grid100kmLabelAry=[],grid100kmIconAry=[];
-let gridLineLabels=[];
-let gridLineWhiteEW=[],gridLineWhiteNS=[];
-let gridLineBlackEW=[],gridLineBlackNS=[];
 
-// Grid configuration from GISsurfer
-const gridLabelColor100km = "CCFFCC";
-const gridLabelColorLineEasting = "00FFFF";
-const gridLabelColorLineNorthing = "FFCC00";
-const gridLabelColorZone = "FFCCCC";
-const gridLineLabelFontSize = "1.25em";
-
-function grid0Master(calledFrom, action) {
+function drawMGRSGrid() {
   if (mgrsGridLayer) { map.removeLayer(mgrsGridLayer); }
   const bounds = map.getBounds();
   const zoom = map.getZoom();
-  const color = document.getElementById('mgrs-color').value;
   const baseOpacity = parseInt(document.getElementById('mgrs-opacity').value) / 100;
   const precisionMode = document.getElementById('mgrs-precision').value;
   
@@ -957,12 +903,11 @@ function grid0Master(calledFrom, action) {
   const west = Math.max(bounds.getWest(), -180);
   const east = Math.min(bounds.getEast(), 180);
 
-  // Determine active grid level based on zoom (Hard switching)
   let gridLevel, majorSpacing, labelLength;
   if (zoom <= 9) {
     gridLevel = '100km';
     majorSpacing = 100000;
-    labelLength = 0; // 2 letters
+    labelLength = 0;
   } else if (zoom <= 12) {
     gridLevel = '10km';
     majorSpacing = 10000;
@@ -991,9 +936,7 @@ function grid0Master(calledFrom, action) {
     else { gridLevel = '1m'; labelLength = 5; }
   }
 
-  // Update grid level indicator
-  const indicator = document.getElementById('grid-level-indicator');
-  indicator.textContent = gridLevel + ' Grid';
+  document.getElementById('grid-level-indicator').textContent = gridLevel + ' Grid';
 
   const zones = new Set();
   const center = map.getCenter();
@@ -1055,17 +998,14 @@ function grid0Master(calledFrom, action) {
         let lineWeight, lineOpacity, lineColor;
         
         if (is100km) {
-          // 100km boundaries - thick green
           lineColor = '#00FF00';
           lineWeight = 5;
           lineOpacity = 0.6;
         } else if (gridLevel === '100km' || gridLevel === '10km') {
-          // Coarser levels - thick green
           lineColor = '#00FF00';
           lineWeight = 4;
           lineOpacity = 0.7;
         } else {
-          // Finer levels (1km, 100m, etc) - thin dark/black
           lineColor = '#000000';
           lineWeight = 2;
           lineOpacity = 0.7;
@@ -1080,7 +1020,6 @@ function grid0Master(calledFrom, action) {
       }
     };
 
-    // Draw grid lines
     for (let e = minE; e <= maxE; e += majorSpacing) {
       const is100km = (e % 100000 === 0);
       drawLine(true, e, is100km);
@@ -1091,7 +1030,6 @@ function grid0Master(calledFrom, action) {
     }
   });
 
-  // Add labels based on grid level
   if (gridLevel === '100km') {
     add100kmLabels(mgrsGridLayer, bounds, centerUTM.zone, center.lat >= 0 ? 'N' : 'S', zoom);
   } else if (gridLevel === '10km') {
@@ -1156,7 +1094,7 @@ function add100kmLabels(layer, bounds, zone, hem, zoom) {
         
         L.marker([ll.lat, ll.lon], {
           icon: L.divIcon({
-            className: 'hundredkm-label',
+            className: 'grid-label-100km',
             html: `${colLetter}${rowLetter}`,
             iconSize: [0, 0],
             iconAnchor: [0, 0]
@@ -1170,7 +1108,6 @@ function add100kmLabels(layer, bounds, zone, hem, zoom) {
 }
 
 function add100kmLabelsPersistent(layer, bounds, zone, hem, zoom) {
-  // Always show 100km labels on the left side when zoomed in
   if (zoom < 10) return;
   
   const south = Math.max(bounds.getSouth(), -80), north = Math.min(bounds.getNorth(), 84);
@@ -1205,7 +1142,6 @@ function add100kmLabelsPersistent(layer, bounds, zone, hem, zoom) {
   const setPat = ((zone - 1) % 3) + 1;
   const colStart = [0, 8, 16][setPat - 1];
 
-  // Only show labels on the left side (first column)
   const e = minE;
   for (let n = minN; n < maxN; n += hundredKmSpacing) {
     const eCtr = e + 50000, nCtr = n + 50000;
@@ -1221,10 +1157,10 @@ function add100kmLabelsPersistent(layer, bounds, zone, hem, zoom) {
       const rowLetter = rowLetters[rowOffset];
       
       const px = map.latLngToContainerPoint([ll.lat, ll.lon]);
-      if (px.x < map.getSize().x * 0.3) { // Only on left 30% of screen
+      if (px.x < map.getSize().x * 0.3) {
         L.marker([ll.lat, ll.lon], {
           icon: L.divIcon({
-            className: 'hundredkm-label',
+            className: 'grid-label-100km',
             html: `${colLetter}${rowLetter}`,
             iconSize: [0, 0],
             iconAnchor: [-30, 0]
@@ -1264,16 +1200,14 @@ function addTickLabels(layer, bounds, zone, hem, spacing, labelLength) {
   minN = Math.floor(minN / spacing) * spacing;
   maxN = Math.ceil(maxN / spacing) * spacing;
 
-  // Format: extract digits based on labelLength
   const formatCoord = (val) => {
-    const fullStr = String(Math.floor((val % 100000) / 1000)).padStart(3, '0'); // 3 digits for km
-    if (labelLength === 1) return fullStr.substr(2, 1); // 10km: last digit
-    if (labelLength === 2) return fullStr.substr(1, 2); // 1km: last 2 digits
-    if (labelLength === 3) return fullStr + String(Math.floor((val % 1000) / 100)); // 100m
+    const fullStr = String(Math.floor((val % 100000) / 1000)).padStart(3, '0');
+    if (labelLength === 1) return fullStr.substr(2, 1);
+    if (labelLength === 2) return fullStr.substr(1, 2);
+    if (labelLength === 3) return fullStr + String(Math.floor((val % 1000) / 100));
     return fullStr;
   };
 
-  // Easting (bottom) - cyan
   for (let e = minE; e <= maxE; e += spacing) {
     let bestPt = null, bestDist = Infinity;
     for (let i = 0; i <= 20; i++) {
@@ -1290,7 +1224,7 @@ function addTickLabels(layer, bounds, zone, hem, spacing, labelLength) {
       if (px.y > 0 && px.y < map.getSize().y && px.x > 0 && px.x < map.getSize().x) {
         L.marker([bestPt.lat, bestPt.lng], {
           icon: L.divIcon({
-            className: 'tick-label-east',
+            className: 'grid-label-easting',
             html: label,
             iconSize: [0, 0],
             iconAnchor: [0, 20]
@@ -1302,7 +1236,6 @@ function addTickLabels(layer, bounds, zone, hem, spacing, labelLength) {
     }
   }
 
-  // Northing (left) - yellow/amber
   for (let n = minN; n <= maxN; n += spacing) {
     let bestPt = null, bestDist = Infinity;
     for (let i = 0; i <= 20; i++) {
@@ -1319,7 +1252,7 @@ function addTickLabels(layer, bounds, zone, hem, spacing, labelLength) {
       if (px.y > 0 && px.y < map.getSize().y && px.x > 0 && px.x < map.getSize().x) {
         L.marker([bestPt.lat, bestPt.lng], {
           icon: L.divIcon({
-            className: 'tick-label-north',
+            className: 'grid-label-northing',
             html: label,
             iconSize: [0, 0],
             iconAnchor: [-25, 0]
@@ -1335,18 +1268,17 @@ function addTickLabels(layer, bounds, zone, hem, spacing, labelLength) {
 document.getElementById('mgrs-tog').addEventListener('click',function(){
   mgrsOn=!mgrsOn;this.classList.toggle('on',mgrsOn);
   document.getElementById('mgrs-options').classList.toggle('show',mgrsOn);
-  if(mgrsOn){grid0Master("toggle on", 1);map.on('moveend zoomend',debouncedDrawMGRSGrid);}
+  if(mgrsOn){drawMGRSGrid();map.on('moveend zoomend',debouncedDrawMGRSGrid);}
   else{if(mgrsGridLayer){map.removeLayer(mgrsGridLayer);mgrsGridLayer=null;}map.off('moveend zoomend',debouncedDrawMGRSGrid);}
 });
-const debouncedDrawMGRSGrid = debounce(grid0Master, 150);
+const debouncedDrawMGRSGrid = debounce(drawMGRSGrid, 150);
 
 ['mgrs-color','mgrs-opacity','mgrs-precision'].forEach(id=>{
   const el=document.getElementById(id);
-  el.addEventListener('change',()=>{if(mgrsOn)grid0Master("change", 1);});
-  el.addEventListener('input',function(){if(id==='mgrs-opacity')document.getElementById('mgrs-opacity-val').textContent=this.value+'%';if(mgrsOn)grid0Master("input", 1);});
+  el.addEventListener('change',()=>{if(mgrsOn)drawMGRSGrid();});
+  el.addEventListener('input',function(){if(id==='mgrs-opacity')document.getElementById('mgrs-opacity-val').textContent=this.value+'%';if(mgrsOn)drawMGRSGrid();});
 });
 
-// ─── GRATICULE ────────────────────────────────────────────────────────────
 let gratLayer=null,gratOn=false;
 function drawGraticule(){
   if(gratLayer)map.removeLayer(gratLayer);
@@ -1367,7 +1299,6 @@ document.getElementById('grat-tog').addEventListener('click',function(){
 });
 const debouncedDrawGraticule = debounce(drawGraticule, 150);
 
-// ─── CURSOR COORDS & INFO ─────────────────────────────────────────────────
 map.on('mousemove',e=>{
   const utm=latLonToUTM(e.latlng.lat,e.latlng.lng);
   document.getElementById('cursor-coords').textContent=`${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)} | ${utm.zone}${utm.letter} ${utm.easting}E ${utm.northing}N`;
@@ -1393,7 +1324,6 @@ document.getElementById('copy-coords').addEventListener('click',()=>{
   navigator.clipboard.writeText(txt).then(()=>notify('Coordinates copied!'));
 });
 
-// ─── MEASURE TOOLS ────────────────────────────────────────────────────────
 let measuring=false,measurePts=[],measureLines=[],measureMarkers=[];
 document.getElementById('measure-tog').addEventListener('click',function(){
   measuring=!measuring;this.classList.toggle('on',measuring);
@@ -1449,7 +1379,6 @@ document.getElementById('clear-area').addEventListener('click',()=>{
   document.getElementById('area-val').textContent='0.00 km²';
 });
 
-// ─── UTILITIES ────────────────────────────────────────────────────────────
 document.getElementById('cross-tog').addEventListener('click',function(){
   this.classList.toggle('on');document.getElementById('crosshair').classList.toggle('show',this.classList.contains('on'));
 });
@@ -1476,7 +1405,7 @@ let bookmarks=JSON.parse(localStorage.getItem('geocommand_bm')||'[]');
 function renderBookmarks(){
   const el=document.getElementById('bookmarks-list');
   if(!bookmarks.length){el.innerHTML='<div style="color:var(--text3);font-size:11px;font-family:var(--font-mono);text-align:center;padding:8px">No bookmarks yet</div>';return;}
-  el.innerHTML=bookmarks.map((b,i)=>`<div class="bookmark-item" onclick="flyTo(${b.lat},${b.lon},14)"><span style="color:var(--amber)">⭐</span><div class="bm-go"><div>${b.name}</div><div class="bm-coords">${b.lat}, ${b.lon}</div></div><button class="bm-del" onclick="event.stopPropagation();deleteBM(${i})">✕</button></div>`).join('');
+  el.innerHTML=bookmarks.map((b,i)=>`<div class="bookmark-item" onclick="flyTo(${b.lat},${b.lon},14)"><span style="color:var(--amber)">⭐</span><div class="bm-go"><div>${b.name}</div><div class="bm-coords">${b.lat}, ${b.lon}</div></div><button class="bm-del" onclick="event.stopPropagation();deleteBM(${i})"></button></div>`).join('');
 }
 renderBookmarks();
 document.getElementById('add-bookmark').addEventListener('click',()=>{
@@ -1513,7 +1442,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='l')navigator.geolocation.getCurrentPosition(p=>flyTo(p.coords.latitude,p.coords.longitude,14));
 });
 
-notify('Welcome to GeoCommand!', 3500);
+notify('Welcome to GeoCommand! Grid styled like GISsurfer.', 3500);
 </script>
 </body>
 </html>
